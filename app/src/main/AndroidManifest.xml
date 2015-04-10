@@ -97,10 +97,25 @@
             android:authorities="com.odoo.hr.core.provider.content.sync.ir_model"
             android:multiprocess="true" />
 
-        <activity
-            android:name="com.odoo.addons.customers.CustomerDetails"
-            android:windowSoftInputMode="adjustPan" />
+        <!-- sync services and providers -->
+        <provider
+            android:name="com.odoo.addons.hr.providers.HrHolidaysSyncProvider"
+            android:authorities="com.odoo.hr.core.provider.content.sync.hr_holidays"
+            android:label="@string/sync_label_holidays"
+            android:multiprocess="true" />
 
+        <service
+            android:name="com.odoo.addons.hr.services.HrHolidaysSyncService"
+            android:exported="true"
+            android:process=":sync_holidays">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/hr_holidays_sync_adapter" />
+        </service>
     </application>
 
 </manifest>

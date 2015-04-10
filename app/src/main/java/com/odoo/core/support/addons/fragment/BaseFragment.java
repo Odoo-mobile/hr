@@ -99,8 +99,8 @@ public abstract class BaseFragment extends Fragment implements IBaseFragment {
     }
 
     // Sync Observer
-    public void setHasSyncStatusObserver(String drawerRefreshTag, ISyncStatusObserverListener syncStatusObserver,
-                                         OModel model) {
+    public void setHasSyncStatusObserver(String drawerRefreshTag,
+                                         ISyncStatusObserverListener syncStatusObserver, OModel model) {
         this.drawerRefreshTag = drawerRefreshTag;
         mSyncStatusObserverListener = syncStatusObserver;
         syncStatusObserverModel = model;

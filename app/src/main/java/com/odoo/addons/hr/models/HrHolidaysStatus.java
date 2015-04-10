@@ -1,4 +1,4 @@
-/**
+package com.odoo.addons.hr.models; /**
  * Odoo, Open Source Management Solution
  * Copyright (C) 2012-today Odoo SA (<http:www.odoo.com>)
  *
@@ -15,22 +15,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http:www.gnu.org/licenses/>
  *
- * Created on 30/12/14 3:11 PM
+ * Created on 16/3/15 4:59 PM
  */
-package com.odoo.config;
 
-import com.odoo.addons.hr.HrHolidayList;
-import com.odoo.core.support.addons.AddonsHelper;
-import com.odoo.core.support.addons.OAddon;
+import android.content.Context;
 
-public class Addons extends AddonsHelper {
+import com.odoo.core.orm.OModel;
+import com.odoo.core.orm.fields.OColumn;
+import com.odoo.core.orm.fields.types.OVarchar;
+import com.odoo.core.support.OUser;
 
-    /**
-     * Declare your required module here
-     * NOTE: For maintain sequence use object name in asc order.
-     * Ex.:
-     * OAddon partners = new OAddon(Partners.class).setDefault();
-     */
+public class HrHolidaysStatus extends OModel {
+    public static final String TAG = HrHolidaysStatus.class.getSimpleName();
 
-    OAddon hrHoliday = new OAddon(HrHolidayList.class);
+    OColumn name = new OColumn("Leave Type", OVarchar.class);
+
+    public HrHolidaysStatus(Context context, OUser user) {
+        super(context, "hr.holidays.status", user);
+    }
 }

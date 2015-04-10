@@ -15,22 +15,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http:www.gnu.org/licenses/>
  *
- * Created on 30/12/14 3:11 PM
+ * Created on 25/3/15 5:26 PM
  */
-package com.odoo.config;
+package com.odoo.addons.hr.models;
 
-import com.odoo.addons.hr.HrHolidayList;
-import com.odoo.core.support.addons.AddonsHelper;
-import com.odoo.core.support.addons.OAddon;
+import android.content.Context;
 
-public class Addons extends AddonsHelper {
+import com.odoo.core.orm.OModel;
+import com.odoo.core.orm.fields.OColumn;
+import com.odoo.core.orm.fields.types.OVarchar;
+import com.odoo.core.support.OUser;
 
-    /**
-     * Declare your required module here
-     * NOTE: For maintain sequence use object name in asc order.
-     * Ex.:
-     * OAddon partners = new OAddon(Partners.class).setDefault();
-     */
+public class HrDepartment extends OModel {
+    public static final String TAG = HrDepartment.class.getSimpleName();
 
-    OAddon hrHoliday = new OAddon(HrHolidayList.class);
+    OColumn name = new OColumn("Department Name", OVarchar.class);
+
+    public HrDepartment(Context context,OUser user) {
+        super(context, "hr.department", user);
+    }
 }
