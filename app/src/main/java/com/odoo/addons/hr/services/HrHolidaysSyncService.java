@@ -1,4 +1,4 @@
-/**
+package com.odoo.addons.hr.services; /**
  * Odoo, Open Source Management Solution
  * Copyright (C) 2012-today Odoo SA (<http:www.odoo.com>)
  *
@@ -15,22 +15,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http:www.gnu.org/licenses/>
  *
- * Created on 30/12/14 3:11 PM
+ * Created on 18/3/15 3:40 PM
  */
-package com.odoo.config;
 
-import com.odoo.addons.hr.HrHolidayList;
-import com.odoo.core.support.addons.AddonsHelper;
-import com.odoo.core.support.addons.OAddon;
+import android.content.Context;
+import android.os.Bundle;
 
-public class Addons extends AddonsHelper {
+import com.odoo.addons.hr.models.HrHolidays;
+import com.odoo.core.service.OSyncAdapter;
+import com.odoo.core.service.OSyncService;
+import com.odoo.core.support.OUser;
 
-    /**
-     * Declare your required module here
-     * NOTE: For maintain sequence use object name in asc order.
-     * Ex.:
-     * OAddon partners = new OAddon(Partners.class).setDefault();
-     */
+public class HrHolidaysSyncService extends OSyncService {
+    public static final String TAG = HrHolidaysSyncService.class.getSimpleName();
 
-    OAddon hrHoliday = new OAddon(HrHolidayList.class);
+    @Override
+    public OSyncAdapter getSyncAdapter(OSyncService service, Context context) {
+        return new OSyncAdapter(context, HrHolidays.class, this, true);
+    }
+
+    @Override
+    public void performDataSync(OSyncAdapter adapter, Bundle extras, OUser user) {
+        adapter.syncDataLimit(40);
+    }
 }
