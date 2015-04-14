@@ -39,8 +39,11 @@ import com.odoo.core.orm.ODataRow;
 import com.odoo.core.support.addons.fragment.BaseFragment;
 import com.odoo.core.support.addons.fragment.ISyncStatusObserverListener;
 import com.odoo.core.support.drawer.ODrawerItem;
+import com.odoo.core.support.list.IOnItemClickListener;
 import com.odoo.core.support.list.OCursorListAdapter;
+import com.odoo.core.utils.IntentUtils;
 import com.odoo.core.utils.OControls;
+import com.odoo.core.utils.OCursorUtils;
 import com.odoo.core.utils.logger.OLog;
 
 import java.util.ArrayList;
@@ -48,7 +51,7 @@ import java.util.List;
 
 public class HrHolidayList extends BaseFragment implements ISyncStatusObserverListener,
         LoaderManager.LoaderCallbacks<Cursor>, OCursorListAdapter.OnViewBindListener,
-        SwipeRefreshLayout.OnRefreshListener {
+        SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, IOnItemClickListener {
     public static final String TAG = HrHolidays.class.getSimpleName();
     public static final String KEY_MENU = "key_menu_item";
     private boolean syncRequested = false;
@@ -99,13 +102,15 @@ public class HrHolidayList extends BaseFragment implements ISyncStatusObserverLi
         mCursorListAdapter = new OCursorListAdapter(getActivity(), null,
                 R.layout.hr_holidays_listitem);
         mCursorListAdapter.setOnViewBindListener(this);
+        setHasFloatingButton(mView, R.id.fabButton, mList, this);
         mList.setAdapter(mCursorListAdapter);
+        mCursorListAdapter.handleItemClickListener(mList,this);
         getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
     public void onViewBind(View view, Cursor cursor, ODataRow row) {
-        OLog.log("DATA " +row);
+        OControls.setText(view, R.id.holidayStatus, row.getString("leave_type"));
         OControls.setText(view, R.id.holidayDisc, row.getString("name"));
         OControls.setText(view, R.id.holidayDateFrom, row.getString("date_from"));
         OControls.setText(view, R.id.holidayDateTo, row.getString("date_to"));
@@ -177,6 +182,28 @@ public class HrHolidayList extends BaseFragment implements ISyncStatusObserverLi
             Toast.makeText(getActivity(), _s(R.string.toast_network_required), Toast.LENGTH_LONG)
                     .show();
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.fabButton:
+                Bundle extra = new Bundle();
+                extra.putString(KEY_MENU, Type.HOLIDAY.toString());
+                IntentUtils.startActivity(getActivity(), HrHolidayDetail.class, extra);
+                break;
+        }
+    }
+
+    @Override
+    public void onItemDoubleClick(View view, int position) {
+
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        ODataRow row = OCursorUtils.toDatarow((Cursor) mCursorListAdapter.getItem(position));
+        IntentUtils.startActivity(getActivity(), HrHolidayDetail.class, row.getPrimaryBundleData());
     }
 
 

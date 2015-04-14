@@ -22,13 +22,17 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.odoo.core.orm.OModel;
+import com.odoo.core.orm.OValues;
+import com.odoo.core.orm.annotation.Odoo;
 import com.odoo.core.orm.fields.OColumn;
-import com.odoo.core.orm.fields.types.OBoolean;
 import com.odoo.core.orm.fields.types.ODateTime;
 import com.odoo.core.orm.fields.types.OInteger;
 import com.odoo.core.orm.fields.types.OSelection;
 import com.odoo.core.orm.fields.types.OVarchar;
 import com.odoo.core.support.OUser;
+import com.odoo.core.utils.logger.OLog;
+
+import org.json.JSONArray;
 
 public class HrHolidays extends OModel {
     public static final String TAG = HrHolidays.class.getSimpleName();
@@ -41,7 +45,7 @@ public class HrHolidays extends OModel {
             OColumn.RelationType.ManyToOne);
     OColumn manager_id = new OColumn("First Approval", HrEmployee.class,
             OColumn.RelationType.ManyToOne);
-    OColumn payslip_status = new OColumn("Payslip Status", OBoolean.class);
+    //    OColumn payslip_status = new OColumn("Payslip Status", OBoolean.class);
     OColumn employee_id = new OColumn("Employee", HrEmployee.class, OColumn.RelationType.ManyToOne);
     OColumn user_id = new OColumn("User", HrEmployee.class, OColumn.RelationType.ManyToOne);
     OColumn category_id = new OColumn("Employee Tag", HrEmployee.class,
@@ -51,7 +55,8 @@ public class HrHolidays extends OModel {
     OColumn holiday_type = new OColumn("Mode", OSelection.class).
             addSelection("employee", "By Employee").addSelection("category", "By Employee Tag");
     OColumn number_of_days = new OColumn("Duration", OInteger.class);
-
+    @Odoo.Functional(depends = {"holiday_status_id"}, store = true, method = "getLeaveType")
+    OColumn leave_type = new OColumn("Type", OVarchar.class).setLocalColumn();
 
     public HrHolidays(Context context, OUser user) {
         super(context, "hr.holidays", user);
@@ -60,5 +65,18 @@ public class HrHolidays extends OModel {
     @Override
     public Uri uri() {
         return buildURI(AUTHORITY);
+    }
+
+    public String getLeaveType(OValues values) {
+        OLog.log("Ovalues " + values.getString("holiday_status_id"));
+        try {
+            if (!values.getString("holiday_status_id").equals("false")) {
+                JSONArray status_id = new JSONArray(values.getString("holiday_status_id"));
+                return status_id.getString(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }
