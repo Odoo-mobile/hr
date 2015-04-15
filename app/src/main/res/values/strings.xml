@@ -11,4 +11,29 @@
     <string name="label_log_note">Log note</string>
     <string name="label_send_message"><u>Send a message</u></string>
     <string name="label_log_an_internal_note"><u>Log an internal note</u></string>
+    <string name="label_create_new">New</string>
+    <string name="label_detail_save">Save</string>
+    <string name="label_detail_cancel">Discard</string>
+    <string name="toast_record_inserted">Record Inserted</string>
+    <string name="label_hh">HH</string>
+    <string name="label_mm">MM</string>
+    <string name="label_work_summary">Enter Work Summary</string>
+    <string name="label_select_task">Select Task</string>
+    <string name="drawer_activities">Activities</string>
+    <string name="label_time_spent">Time Spent</string>
+    <string-array name="motivation_messages">
+        <item>Good morning my friend. You look awesome today!</item>
+        <item>Wishing you an awesome morning!</item>
+        <item>Success comes to those who have the willpower to win over their snooze button.</item>
+        <item>A good day starts with good thoughts!</item>
+        <item>No one can stop you from doing anything that is on your mind!</item>
+        <item>It is not just another day, it is yet another chance to make your dreams come true!</item>
+        <item>If you have not been able to achieve something, today is the best time to start working towards it again!</item>
+        <item>Imagine all that you will be able to achieve today!</item>
+        <item>Good morning is a contradiction of terms. Good morning anyway ;)</item>
+        <item>Good morning, and enjoy your coffee!</item>
+    </string-array>
+    <string name="label_well_done">Well done! You have managed to work on everything you planned for today.</string>
+    <string name="title_activity_demodetail">demodetail</string>
+
 </resources>

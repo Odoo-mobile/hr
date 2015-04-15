@@ -15,22 +15,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http:www.gnu.org/licenses/>
  *
- * Created on 30/12/14 3:11 PM
+ * Created on 13/4/15 4:41 PM
  */
-package com.odoo.config;
+package com.odoo.addons.timesheet.services;
 
-import com.odoo.addons.timesheet.TimeSheet;
-import com.odoo.core.support.addons.AddonsHelper;
-import com.odoo.core.support.addons.OAddon;
+import android.content.Context;
+import android.os.Bundle;
 
-public class Addons extends AddonsHelper {
+import com.odoo.addons.timesheet.models.ProjectTask;
+import com.odoo.core.service.OSyncAdapter;
+import com.odoo.core.service.OSyncService;
+import com.odoo.core.support.OUser;
 
-    /**
-     * Declare your required module here
-     * NOTE: For maintain sequence use object name in asc order.
-     * Ex.:
-     * OAddon partners = new OAddon(Partners.class).setDefault();
-     */
-    OAddon a_timesheet = new OAddon(TimeSheet.class).setDefault();
+public class ProjectTaskSyncService extends OSyncService {
+    public static final String TAG = ProjectTaskSyncService.class.getSimpleName();
 
+    @Override
+    public OSyncAdapter getSyncAdapter(OSyncService service, Context context) {
+        return new OSyncAdapter(context, ProjectTask.class, this, true);
+    }
+
+    @Override
+    public void performDataSync(OSyncAdapter adapter, Bundle extras, OUser user) {
+        adapter.syncDataLimit(30);
+    }
 }

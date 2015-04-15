@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--<odoo.controls.BezelImageView-->
+    <!--android:id="@+id/img_timesheet_user"-->
+    <!--android:layout_width="48dp"-->
+    <!--android:layout_height="48dp"-->
+    <!--android:layout_margin="@dimen/default_8dp"-->
+    <!--android:src="@drawable/ic_action_user" />-->
+
+    <TextView
+        android:id="@+id/txv_name"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:fontFamily="@string/font_normal"
+        android:textColor="@color/body_text_1"
+        android:padding="10dp"
+        android:text="Sample Text" />
+
+    <TextView
+        android:id="@+id/txv_date"
+        android:layout_width="wrap_content"
+        android:textStyle="bold"
+        android:layout_height="wrap_content"
+        android:fontFamily="@string/font_normal"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_marginRight="@dimen/default_16dp"
+        android:textColor="#777777"
+        android:text="Sample Date" />
+
+</LinearLayout>
