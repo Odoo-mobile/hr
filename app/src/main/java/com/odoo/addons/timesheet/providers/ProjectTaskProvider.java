@@ -15,22 +15,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http:www.gnu.org/licenses/>
  *
- * Created on 30/12/14 3:11 PM
+ * Created on 13/4/15 4:34 PM
  */
-package com.odoo.config;
+package com.odoo.addons.timesheet.providers;
 
-import com.odoo.addons.timesheet.TimeSheet;
-import com.odoo.core.support.addons.AddonsHelper;
-import com.odoo.core.support.addons.OAddon;
+import com.odoo.addons.timesheet.models.ProjectTask;
+import com.odoo.core.orm.provider.BaseModelProvider;
 
-public class Addons extends AddonsHelper {
+public class ProjectTaskProvider extends BaseModelProvider {
+    public static final String TAG = ProjectTaskProvider.class.getSimpleName();
 
-    /**
-     * Declare your required module here
-     * NOTE: For maintain sequence use object name in asc order.
-     * Ex.:
-     * OAddon partners = new OAddon(Partners.class).setDefault();
-     */
-    OAddon a_timesheet = new OAddon(TimeSheet.class).setDefault();
-
+    @Override
+    public String authority() {
+        return ProjectTask.AUTHORITY;
+    }
 }

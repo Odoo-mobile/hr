@@ -62,6 +62,9 @@
             android:theme="@style/Theme.AppCompat.Light.Dialog" />
         <activity android:name="com.odoo.core.account.About" />
         <activity android:name="com.odoo.core.account.Profile" />
+        <activity
+            android:name=".addons.timesheet.TimeSheetDetail"
+            android:windowSoftInputMode="adjustPan" />
 
         <!-- Reminder Receivers// -->
         <receiver android:name="com.odoo.core.utils.reminder.ReminderReceiver" />
@@ -71,7 +74,7 @@
                 <action android:name="odoo.Odoo.ACTION_ODOO_UPDATES" />
             </intent-filter>
         </receiver>
-        
+
         <receiver android:name=".server.notifications.OdooServerNotificationReceiver">
             <intent-filter>
                 <action android:name="com.odoo.odoo.mobile.SERVER_NOTIFICATION" />
@@ -96,10 +99,44 @@
             android:name="com.odoo.base.addons.ir.providers.IrModelProvider"
             android:authorities="com.odoo.hr.core.provider.content.sync.ir_model"
             android:multiprocess="true" />
+        <!--<provider-->
+        <!--android:name=".addons.timesheet.providers.HrTimeSheetProvider"-->
+        <!--android:authorities="com.odoo.hr.addons.timesheet.models.hr_time_sheet"-->
+        <!--android:label="HrTimeSheet"-->
+        <!--android:multiprocess="true" />-->
 
-        <activity
-            android:name="com.odoo.addons.customers.CustomerDetails"
-            android:windowSoftInputMode="adjustPan" />
+        <!--<service-->
+        <!--android:name=".addons.timesheet.services.HrTimeSheetService"-->
+        <!--android:exported="true"-->
+        <!--android:process=":sync_timesheet">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="android.content.SyncAdapter" />-->
+        <!--</intent-filter>-->
+
+        <!--<meta-data-->
+        <!--android:name="android.content.SyncAdapter"-->
+        <!--android:resource="@xml/timesheet_sync_adapter" />-->
+        <!--</service>-->
+        <provider
+            android:name=".addons.timesheet.providers.ProjectTaskProvider"
+            android:authorities="com.odoo.hr.addons.timesheet.models.project_task"
+            android:label="ProjectTask"
+            android:multiprocess="true" />
+        <service
+            android:name=".addons.timesheet.services.ProjectTaskSyncService"
+            android:exported="true"
+            android:process=":sync_projects_task">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/project_task_sync_adapter" />
+        </service>
+        <!--<activity-->
+        <!--android:name="com.odoo.addons.customers.CustomerDetails"-->
+        <!--android:windowSoftInputMode="adjustPan" />-->
 
     </application>
 

@@ -15,22 +15,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http:www.gnu.org/licenses/>
  *
- * Created on 30/12/14 3:11 PM
+ * Created on 25/3/15 3:02 PM
  */
-package com.odoo.config;
+package com.odoo.addons.timesheet.models;
 
-import com.odoo.addons.timesheet.TimeSheet;
-import com.odoo.core.support.addons.AddonsHelper;
-import com.odoo.core.support.addons.OAddon;
+import android.content.Context;
 
-public class Addons extends AddonsHelper {
+import com.odoo.core.orm.OModel;
+import com.odoo.core.orm.fields.OColumn;
+import com.odoo.core.orm.fields.types.OVarchar;
+import com.odoo.core.support.OUser;
 
-    /**
-     * Declare your required module here
-     * NOTE: For maintain sequence use object name in asc order.
-     * Ex.:
-     * OAddon partners = new OAddon(Partners.class).setDefault();
-     */
-    OAddon a_timesheet = new OAddon(TimeSheet.class).setDefault();
+public class HrTimeSheet_Sheet extends OModel {
+    public static final String TAG = HrTimeSheet_Sheet.class.getSimpleName();
 
+    OColumn name = new OColumn("Name", OVarchar.class);
+
+    public HrTimeSheet_Sheet(Context context, OUser user) {
+        super(context, "hr.timesheet.sheet", user);
+    }
 }
