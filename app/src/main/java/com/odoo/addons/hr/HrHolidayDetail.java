@@ -19,11 +19,13 @@
  */
 package com.odoo.addons.hr;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.odoo.R;
 import com.odoo.addons.hr.models.HrHolidays;
@@ -89,9 +91,24 @@ public class HrHolidayDetail extends ActionBarActivity {
             actionBar.setTitle(R.string.label_new);
         } else {
             initFormValues();
+            if (record.getString("state").equals("validate")) {
+                mForm.findViewById(R.id.viewState).setBackgroundColor(Color.GREEN);
+            } else if (record.getString("state").equals("cancel")) {
+                mForm.findViewById(R.id.viewState).setBackgroundColor(Color.RED);
+            } else if (record.getString("state").equals("draft")) {
+                mForm.findViewById(R.id.viewState).setBackgroundColor(Color.GRAY);
+            } else if (record.getString("state").equals("confirm")) {
+                mForm.findViewById(R.id.viewState).setBackgroundColor(Color.BLUE);
+            }
         }
         actionBar.setHomeAsUpIndicator(R.drawable.ic_action_navigation_close);
         mForm.setEditable(true);
+        mForm.findViewById(R.id.note).setVisibility(View.GONE);
+        if (bundle.getString(HrHolidayList.KEY_MENU).equals(HrHolidayList.Type.ALLOCATION_REQUEST.
+                toString())) {
+            mForm.findViewById(R.id.dateSelection).setVisibility(View.GONE);
+            mForm.findViewById(R.id.note).setVisibility(View.VISIBLE);
+        }
     }
 
     private void initFormValues() {

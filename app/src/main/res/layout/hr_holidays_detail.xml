@@ -29,6 +29,12 @@
             app:controlIconTint="@color/body_text_3"
             app:modelName="hr.holidays">
 
+            <View
+                android:layout_weight="1"
+                android:layout_height="5dp"
+                android:layout_width="match_parent"
+                android:id="@+id/viewState"></View>
+
             <odoo.controls.OField
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -43,26 +49,57 @@
             <odoo.controls.OField
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:fieldName="holiday_status_id"></odoo.controls.OField>
+                app:fieldName="holiday_status_id"
+                app:widgetType="SearchableLive"></odoo.controls.OField>
 
             <View style="@style/ViewSeparator" />
 
-            <odoo.controls.OField
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:fieldName="number_of_days"></odoo.controls.OField>
+                android:orientation="horizontal">
+
+                <odoo.controls.OField
+                    android:layout_width="wrap_content"
+                    app:defaultValue="0"
+                    android:layout_height="match_parent"
+                    app:fieldName="number_of_days"
+                    app:widgetType="Duration"></odoo.controls.OField>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="left|fill_vertical"
+                    android:text="days" />
+            </LinearLayout>
 
             <View style="@style/ViewSeparator" />
 
-            <odoo.controls.OField
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:fieldName= "date_from"></odoo.controls.OField>
+                android:id="@+id/dateSelection"
+                android:orientation="vertical">
+
+                <odoo.controls.OField
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:fieldName="date_from"></odoo.controls.OField>
+
+                <odoo.controls.OField
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:fieldName="date_to"></odoo.controls.OField>
+
+                <View style="@style/ViewSeparator" />
+            </LinearLayout>
+
 
             <odoo.controls.OField
                 android:layout_width="match_parent"
+                android:id="@+id/note"
                 android:layout_height="match_parent"
-                app:fieldName="date_to"></odoo.controls.OField>
+                app:fieldName="notes"></odoo.controls.OField>
         </odoo.controls.OForm>
     </ScrollView>
 </LinearLayout>

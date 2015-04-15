@@ -28,6 +28,7 @@ import com.odoo.core.orm.fields.OColumn;
 import com.odoo.core.orm.fields.types.ODateTime;
 import com.odoo.core.orm.fields.types.OInteger;
 import com.odoo.core.orm.fields.types.OSelection;
+import com.odoo.core.orm.fields.types.OText;
 import com.odoo.core.orm.fields.types.OVarchar;
 import com.odoo.core.support.OUser;
 import com.odoo.core.utils.logger.OLog;
@@ -57,6 +58,9 @@ public class HrHolidays extends OModel {
     OColumn number_of_days = new OColumn("Duration", OInteger.class);
     @Odoo.Functional(depends = {"holiday_status_id"}, store = true, method = "getLeaveType")
     OColumn leave_type = new OColumn("Type", OVarchar.class).setLocalColumn();
+    OColumn notes = new OColumn("Notes", OText.class);
+    OColumn type = new OColumn("Type", OVarchar.class);
+    OColumn state = new OColumn("State", OVarchar.class);
 
     public HrHolidays(Context context, OUser user) {
         super(context, "hr.holidays", user);

@@ -58,9 +58,10 @@ public class HrHolidayList extends BaseFragment implements ISyncStatusObserverLi
     private OCursorListAdapter mCursorListAdapter = null;
     private ListView mList = null;
     private View mView = null;
+    private Bundle extra = null;
 
     public enum Type {
-        HOLIDAY
+        LEAVE_REQUEST, ALLOCATION_REQUEST, LEAVE_SUMMARY
     }
 
     @Override
@@ -73,6 +74,7 @@ public class HrHolidayList extends BaseFragment implements ISyncStatusObserverLi
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mView = view;
+        extra = getArguments();
         setHasSyncStatusObserver(TAG, this, db());
         initAdapter();
     }
@@ -82,7 +84,11 @@ public class HrHolidayList extends BaseFragment implements ISyncStatusObserverLi
         List<ODrawerItem> menu = new ArrayList<ODrawerItem>();
         menu.add(new ODrawerItem(TAG).setGroupTitle().setTitle("Leaves"));
         menu.add(new ODrawerItem(TAG).setTitle("Leave Request").setInstance(new HrHolidayList()).
-                setExtra(data(Type.HOLIDAY)));
+                setExtra(data(Type.LEAVE_REQUEST)));
+        menu.add(new ODrawerItem(TAG).setTitle("Allocation Request").setInstance(new HrHolidayList()).
+                setExtra(data(Type.ALLOCATION_REQUEST)));
+        menu.add(new ODrawerItem(TAG).setTitle("Leave Summary").setInstance(new HrHolidayList()).
+                setExtra(data(Type.LEAVE_SUMMARY)));
         return menu;
     }
 
@@ -104,7 +110,7 @@ public class HrHolidayList extends BaseFragment implements ISyncStatusObserverLi
         mCursorListAdapter.setOnViewBindListener(this);
         setHasFloatingButton(mView, R.id.fabButton, mList, this);
         mList.setAdapter(mCursorListAdapter);
-        mCursorListAdapter.handleItemClickListener(mList,this);
+        mCursorListAdapter.handleItemClickListener(mList, this);
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -114,6 +120,10 @@ public class HrHolidayList extends BaseFragment implements ISyncStatusObserverLi
         OControls.setText(view, R.id.holidayDisc, row.getString("name"));
         OControls.setText(view, R.id.holidayDateFrom, row.getString("date_from"));
         OControls.setText(view, R.id.holidayDateTo, row.getString("date_to"));
+//        if (extra.containsKey(Type.ALLOCATION_REQUEST.toString())) {
+//            OControls.setVisible(view, R.id.notes);
+//            OControls.setText(view, R.id.notes, row.getString("notes"));
+//        }
     }
 
     @Override
@@ -123,7 +133,20 @@ public class HrHolidayList extends BaseFragment implements ISyncStatusObserverLi
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(getActivity(), db().uri(), null, null, null, null);
+        String where = null;
+        String[] whereArgs = null;
+        if (extra.containsKey(HrHolidayList.KEY_MENU))
+            if (extra.getString(HrHolidayList.KEY_MENU) == Type.LEAVE_REQUEST.toString()) {
+                where = "type = ?";
+                whereArgs = new String[]{"remove"};
+            }else if (extra.getString(HrHolidayList.KEY_MENU) == Type.ALLOCATION_REQUEST.toString()) {
+                where = "type = ?";
+                whereArgs = new String[]{"add"};
+            } else if (extra.getString(HrHolidayList.KEY_MENU) == Type.LEAVE_SUMMARY.toString()) {
+                where = "(holiday_type = ? and state != ?))"; // group by ((holiday_status_id)";
+                whereArgs = new String[]{"employee", "refuse"};
+            }
+        return new CursorLoader(getActivity(), db().uri(), null, where, whereArgs, null);
     }
 
     @Override
@@ -188,9 +211,13 @@ public class HrHolidayList extends BaseFragment implements ISyncStatusObserverLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fabButton:
-                Bundle extra = new Bundle();
-                extra.putString(KEY_MENU, Type.HOLIDAY.toString());
-                IntentUtils.startActivity(getActivity(), HrHolidayDetail.class, extra);
+                Bundle bundle = new Bundle();
+                if (extra.getString(KEY_MENU) == Type.ALLOCATION_REQUEST.toString()) {
+                    bundle.putString(KEY_MENU, Type.ALLOCATION_REQUEST.toString());
+                } else {
+                    bundle.putString(KEY_MENU, Type.LEAVE_REQUEST.toString());
+                }
+                IntentUtils.startActivity(getActivity(), HrHolidayDetail.class, bundle);
                 break;
         }
     }
@@ -203,7 +230,14 @@ public class HrHolidayList extends BaseFragment implements ISyncStatusObserverLi
     @Override
     public void onItemClick(View view, int position) {
         ODataRow row = OCursorUtils.toDatarow((Cursor) mCursorListAdapter.getItem(position));
-        IntentUtils.startActivity(getActivity(), HrHolidayDetail.class, row.getPrimaryBundleData());
+        Bundle bundle = new Bundle();
+        if (extra.getString(KEY_MENU) == Type.ALLOCATION_REQUEST.toString()) {
+            bundle.putString(KEY_MENU, Type.ALLOCATION_REQUEST.toString());
+        } else {
+            bundle.putString(KEY_MENU, Type.LEAVE_REQUEST.toString());
+        }
+        bundle.putAll(row.getPrimaryBundleData());
+        IntentUtils.startActivity(getActivity(), HrHolidayDetail.class, bundle);
     }
 
 
