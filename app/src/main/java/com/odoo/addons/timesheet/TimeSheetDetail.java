@@ -34,6 +34,7 @@ import com.odoo.R;
 import com.odoo.addons.timesheet.models.ProjectTask;
 import com.odoo.core.orm.ODataRow;
 import com.odoo.core.utils.OActionBarUtils;
+import com.odoo.core.utils.logger.OLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +65,16 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
         edtHour.setOnFocusChangeListener(this);
         edtMinutes.setOnFocusChangeListener(this);
         initActionBar();
+        init();
         initTaskSpinner();
+    }
+
+    private void init() {
+        Bundle extra = getIntent().getExtras();
+        if (extra != null && extra.containsKey(TimeSheet.PROJECT_KEY)) {
+            //FIXME init Data
+            OLog.log(">>>>>>> " + extra.getInt(TimeSheet.PROJECT_KEY));
+        }
     }
 
     private void initActionBar() {
@@ -84,7 +94,6 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
                 android.R.layout.simple_spinner_item, mSpinnerArray);
         spnTask.setAdapter(adapter);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -139,10 +148,10 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
 
     @Override
     public void onFocusChange(View view, boolean b) {
+        int hour = Integer.parseInt(!edtHour.getText().toString().equals("") ? edtHour.getText().toString() : "0");
         switch (view.getId()) {
             case R.id.edt_hour:
-                int hour = Integer.parseInt(!edtHour.getText().toString().equals("") ? edtHour.getText().toString() : "0");
-                if (hour > 0 && hour < 13)
+                if (hour <= 12)
                     sHour.setProgress(hour);
                 else if (hour > 12) {
                     sHour.setProgress(0);
@@ -151,9 +160,19 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
                 break;
             case R.id.edt_minutes:
                 int min = Integer.parseInt(!edtMinutes.getText().toString().equals("") ? edtMinutes.getText().toString() : "0");
-                if (min > 0 && min < 61)
+                if (min == 60) {
+                    sMinutes.setProgress(0);
+                    edtMinutes.setText("0");
+                    hour++;
+                    edtHour.setText(hour + "");
+                    sHour.setProgress(hour);
+                    if (hour > 12) {
+                        sHour.setProgress(0);
+                        edtHour.setText("0");
+                    }
+                } else if (min > 0 && min < 60)
                     sMinutes.setProgress(min);
-                else if (min > 60) {
+                else if (min >= 60) {
                     sMinutes.setProgress(0);
                     edtMinutes.setText("0");
                 }

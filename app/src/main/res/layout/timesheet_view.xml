@@ -3,6 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:padding="10dp"
+    android:background="@color/primary_material_light"
     android:layout_height="match_parent">
 
 
@@ -48,11 +49,21 @@
 
     <Spinner
         android:id="@+id/spn_tasks"
+        android:padding="5dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></Spinner>
+        android:layout_height="wrap_content" />
 
-    <ListView
-        android:id="@+id/lst_task_list"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></ListView>
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:background="#ffffff"
+        android:orientation="horizontal">
+
+        <ListView
+            android:id="@+id/lst_task_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 </LinearLayout>

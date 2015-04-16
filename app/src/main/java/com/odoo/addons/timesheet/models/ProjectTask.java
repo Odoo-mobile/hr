@@ -24,10 +24,14 @@ import android.net.Uri;
 
 import com.odoo.base.addons.res.ResUsers;
 import com.odoo.core.orm.OModel;
+import com.odoo.core.orm.OValues;
+import com.odoo.core.orm.annotation.Odoo;
 import com.odoo.core.orm.fields.OColumn;
 import com.odoo.core.orm.fields.types.ODateTime;
 import com.odoo.core.orm.fields.types.OVarchar;
 import com.odoo.core.support.OUser;
+
+import org.json.JSONArray;
 
 import odoo.ODomain;
 
@@ -37,15 +41,41 @@ public class ProjectTask extends OModel {
 
     OColumn name = new OColumn("Task Name", OVarchar.class).setSize(128).setRequired();
     OColumn date_deadline = new OColumn("Deadline", ODateTime.class);
-
     OColumn project_id = new OColumn("Project", ProjectProject.class, OColumn.RelationType.ManyToOne);
     OColumn user_id = new OColumn("Assigned to", ResUsers.class, OColumn.RelationType.ManyToOne);
     OColumn reviewer_id = new OColumn("Reviewer", ResUsers.class, OColumn.RelationType.ManyToOne);
     OColumn work_ids = new OColumn("Work Summary", ProjectTaskWork.class, OColumn.RelationType.OneToMany);
-
+    @Odoo.Functional(depends = {"project_id"}, store = true, method = "storeProjectName")
+    OColumn project_name = new OColumn("Project Name", OVarchar.class).setLocalColumn();
+//    @Odoo.Functional(depends = {"work_ids"}, store = true, method = "storeWorkHour")
+//    OColumn work_hour = new OColumn("Project Hour", OFloat.class).setLocalColumn();
 
     public ProjectTask(Context context, OUser user) {
         super(context, "project.task", user);
+    }
+
+    public String storeProjectName(OValues value) {
+        try {
+            if (!value.getString("project_id").equals("false")) {
+                JSONArray project_id = (JSONArray) value.get("project_id");
+                return project_id.getString(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public String storeWorkHour(OValues value) {
+        try {
+            if (!value.getString("work_ids").equals("false")) {
+                JSONArray project_id = (JSONArray) value.get("work_ids");
+                return project_id.getString(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     @Override

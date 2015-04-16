@@ -48,10 +48,12 @@ import com.odoo.addons.timesheet.models.ProjectTask;
 import com.odoo.addons.timesheet.models.ProjectTaskWork;
 import com.odoo.core.orm.ODataRow;
 import com.odoo.core.orm.OValues;
+import com.odoo.core.orm.fields.OColumn;
 import com.odoo.core.support.addons.fragment.BaseFragment;
 import com.odoo.core.support.drawer.ODrawerItem;
 import com.odoo.core.support.list.IOnItemClickListener;
 import com.odoo.core.support.list.OCursorListAdapter;
+import com.odoo.core.utils.IntentUtils;
 import com.odoo.core.utils.ODateUtils;
 import com.odoo.core.utils.OResource;
 
@@ -59,9 +61,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TimeSheet extends BaseFragment implements
-
-        IOnItemClickListener, AdapterView.OnItemSelectedListener, View.OnClickListener,
-        LoaderManager.LoaderCallbacks<Cursor>, OCursorListAdapter.OnViewBindListener {
+        AdapterView.OnItemSelectedListener, View.OnClickListener,
+        LoaderManager.LoaderCallbacks<Cursor>, OCursorListAdapter.OnViewBindListener, IOnItemClickListener {
     public static final String TAG = TimeSheet.class.getSimpleName();
     private View mView;
     private Cursor mCursor;
@@ -76,6 +77,7 @@ public class TimeSheet extends BaseFragment implements
     private TextView txvProjecName;
     private ListView lstTaskList;
     private OCursorListAdapter mAdapter = null;
+    public static final String PROJECT_KEY = "project_id";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -106,6 +108,7 @@ public class TimeSheet extends BaseFragment implements
 
     public void initSpinners() {
         spinnerArray = new ArrayList();
+        spinnerArray.add("Select Task");
         for (ODataRow rows : db().select(new String[]{"name"})) {
             if (!rows.getString("name").equals("false"))
                 spinnerArray.add(rows.getString("name"));
@@ -120,6 +123,7 @@ public class TimeSheet extends BaseFragment implements
                 R.layout.timesheet_custom_listview_row);
         mAdapter.setOnViewBindListener(this);
         lstTaskList.setAdapter(mAdapter);
+        mAdapter.handleItemClickListener(lstTaskList, this);
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -129,9 +133,10 @@ public class TimeSheet extends BaseFragment implements
         TextView txvRowProjectName, txvRowTaskName, txvRowTime;
         txvRowProjectName = (TextView) view.findViewById(R.id.txvRowProjectName);
         txvRowTaskName = (TextView) view.findViewById(R.id.txvRowTaskName);
-        txvRowTime = (TextView) view.findViewById(R.id.txvRowTime);
-        txvRowProjectName.setText(row.getM2ORecord("project_id").getName());
+//        txvRowTime = (TextView) view.findViewById(R.id.txvRowTime);
+        txvRowProjectName.setText(row.getString("project_name"));
         txvRowTaskName.setText(row.getString("name"));
+//        txvRowTime.setText(row.getString("storeWorkHour"));
     }
 
     @Override
@@ -139,9 +144,10 @@ public class TimeSheet extends BaseFragment implements
         return new CursorLoader(getActivity(), db().uri(), null, null, null, null);
     }
 
+
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mAdapter.changeCursor(null);
+        mAdapter.changeCursor(data);
     }
 
     @Override
@@ -163,10 +169,6 @@ public class TimeSheet extends BaseFragment implements
         return ProjectTask.class;
     }
 
-    @Override
-    public void onItemDoubleClick(View view, int position) {
-
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -188,18 +190,14 @@ public class TimeSheet extends BaseFragment implements
     }
 
     @Override
-    public void onItemClick(View view, int position) {
-//        Intent i = new Intent(getActivity(), TimeSheetDetail.class);
-//        i.putExtra("name", mCursor.getString(mCursor.getColumnIndex("name")));
-//        startActivity(i);
-    }
-
-    @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        ODataRow row = db().browse(new String[]{"project_id"}, "name = ?", new String[]{spinnerArray.get(position)});
-        ODataRow project = mProject.browse(row.getInt("project_id"));
-        if (!project.getString("account_name").equals("false"))
-            txvProjecName.setText(project.getString("account_name"));
+        if (!db().isEmptyTable() && position != 0) {
+            ODataRow row = db().browse(new String[]{"project_id"}, "name = ?", new String[]{spinnerArray.get(position + 1)});
+            ODataRow project = mProject.browse(row.getInt("project_id"));
+            if (!project.getString("account_name").equals("false"))
+                txvProjecName.setText(project.getString("account_name"));
+        } else
+            txvProjecName.setText("Project / ");
     }
 
     @Override
@@ -225,5 +223,18 @@ public class TimeSheet extends BaseFragment implements
                 Toast.makeText(mContext, OResource.string(mContext, R.string.toast_record_inserted), Toast.LENGTH_LONG).show();
             btnStartStop.setText("Start");
         }
+    }
+
+    @Override
+    public void onItemDoubleClick(View view, int position) {
+
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        Cursor cr = (Cursor) mAdapter.getItem(position);
+        Bundle bundle = new Bundle();
+        bundle.putInt(PROJECT_KEY, cr.getInt(cr.getColumnIndex(OColumn.ROW_ID)));
+        IntentUtils.startActivity(getActivity(), TimeSheetDetail.class, bundle);
     }
 }
