@@ -53,6 +53,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <TextView
+        android:id="@+id/txv_motivation"
+        android:paddingTop="10dp"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:fontFamily="@string/font_normal"
+        android:textStyle="bold"
+        android:text="Good Morning Have a Nice Day :)"
+        android:layout_height="wrap_content" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

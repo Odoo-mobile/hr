@@ -19,35 +19,49 @@
  */
 package com.odoo.addons.timesheet;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.odoo.R;
+import com.odoo.addons.timesheet.models.ProjectProject;
 import com.odoo.addons.timesheet.models.ProjectTask;
+import com.odoo.addons.timesheet.models.ProjectTaskWork;
 import com.odoo.core.orm.ODataRow;
+import com.odoo.core.orm.OValues;
+import com.odoo.core.support.OUser;
 import com.odoo.core.utils.OActionBarUtils;
 import com.odoo.core.utils.logger.OLog;
+import com.odoo.core.utils.ODateUtils;
+import com.odoo.core.utils.OResource;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeekBarChangeListener, View.OnFocusChangeListener {
+public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeekBarChangeListener,
+        View.OnFocusChangeListener, AdapterView.OnItemSelectedListener {
     public static final String TAG = TimeSheetDetail.class.getSimpleName();
     private ActionBar actionBar;
     private SeekBar sHour, sMinutes;
-    private EditText edtHour, edtMinutes;
+    private TextView txvDetailProjName;
+    private EditText edtHour, edtMinutes, edtWorkSummary;
     private Spinner spnTask;
     private ProjectTask mProjTask;
     private List<String> mSpinnerArray;
     private ArrayAdapter adapter = null;
+    private ProjectTaskWork mPTWork;
+    private Context mContext = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +80,9 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
         edtMinutes.setOnFocusChangeListener(this);
         initActionBar();
         init();
+        mContext = this;
+        initActionBar();
+        initControls();
         initTaskSpinner();
     }
 
@@ -85,7 +102,27 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
+    private void initControls() {
+        mProjTask = new ProjectTask(this, null);
+        mPTWork = new ProjectTaskWork(this, null);
+        mSpinnerArray = new ArrayList<>();
+        txvDetailProjName = (TextView) findViewById(R.id.txvDetailProjetName);
+        sHour = (SeekBar) findViewById(R.id.seek_hours);
+        sMinutes = (SeekBar) findViewById(R.id.seek_minutes);
+        edtHour = (EditText) findViewById(R.id.edt_hour);
+        edtMinutes = (EditText) findViewById(R.id.edt_minutes);
+        edtWorkSummary = (EditText) findViewById(R.id.edt_work_summary);
+        spnTask = (Spinner) findViewById(R.id.spnDetailTask);
+        spnTask.setOnItemSelectedListener(this);
+        sHour.setOnSeekBarChangeListener(this);
+        sMinutes.setOnSeekBarChangeListener(this);
+        edtHour.setOnFocusChangeListener(this);
+        edtMinutes.setOnFocusChangeListener(this);
+    }
+
+
     private void initTaskSpinner() {
+        mSpinnerArray.add("Select Task");
         for (ODataRow rows : mProjTask.select(new String[]{"name"})) {
             if (!rows.getString("name").equals("false"))
                 mSpinnerArray.add(rows.getString("name"));
@@ -93,6 +130,7 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
         adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, mSpinnerArray);
         spnTask.setAdapter(adapter);
+        txvDetailProjName.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -108,15 +146,31 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
                 onBackPressed();
                 return true;
             case R.id.menu_detail_save:
+                int hour = Integer.parseInt(!edtHour.getText().toString().equals("") ? edtHour.getText().toString() : "0");
+                int min = Integer.parseInt(!edtMinutes.getText().toString().equals("") ? edtMinutes.getText().toString() : "0");
+                if (hour > 12 || min > 60)
+                    Toast.makeText(this, OResource.string(this, R.string.toast_max_limit_crossed), Toast.LENGTH_LONG).show();
+                else {
+                    String time = "";
+                    time = hour + "." + min;
+                    OValues values = new OValues();
+                    values.put("name", edtWorkSummary.getText().toString());
+                    values.put("hour", time);
+                    values.put("date", ODateUtils.getDate());
+                    values.put("user_id", OUser.current(this).getUser_id());
+                    int id = mPTWork.insert(values);
+                    if (id > 0)
+                        Toast.makeText(this, OResource.string(this, R.string.toast_record_inserted), Toast.LENGTH_LONG).show();
+                }
                 break;
             case R.id.menu_detail_discard:
                 onBackPressed();
                 break;
             default:
+                Toast.makeText(this, OResource.string(this, R.string.toast_invalid_choice), Toast.LENGTH_LONG).show();
                 break;
         }
         return super.onOptionsItemSelected(item);
-
     }
 
     @Override
@@ -178,5 +232,24 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
                 }
                 break;
         }
+    }
+
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        ProjectProject project = new ProjectProject(mContext, null);
+        if (position != 0) {
+            ODataRow row = mProjTask.browse(new String[]{"project_id"}, "name = ?", new String[]{mSpinnerArray.get(position + 1)});
+            ODataRow prow = project.browse(row.getInt("project_id"));
+            if (!prow.getString("account_name").equals("false")) {
+                txvDetailProjName.setText(prow.getString("account_name"));
+            }
+        } else
+            txvDetailProjName.setText("");
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }

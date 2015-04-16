@@ -11,15 +11,19 @@
     <string name="label_log_note">Log note</string>
     <string name="label_send_message"><u>Send a message</u></string>
     <string name="label_log_an_internal_note"><u>Log an internal note</u></string>
+
+    <string name="drawer_timesheet_title">Timesheet</string>
+    <string name="drawer_timesheet_activities">Activities</string>
     <string name="label_create_new">New</string>
     <string name="label_detail_save">Save</string>
     <string name="label_detail_cancel">Discard</string>
     <string name="toast_record_inserted">Record Inserted</string>
+    <string name="toast_invalid_choice">Invalid Choice</string>
+    <string name="toast_max_limit_crossed">Max Limit Crossed Re-enter Time</string>
     <string name="label_hh">HH</string>
     <string name="label_mm">MM</string>
     <string name="label_work_summary">Enter Work Summary</string>
     <string name="label_select_task">Select Task</string>
-    <string name="drawer_activities">Activities</string>
     <string name="label_time_spent">Time Spent</string>
     <string-array name="motivation_messages">
         <item>Good morning my friend. You look awesome today!</item>

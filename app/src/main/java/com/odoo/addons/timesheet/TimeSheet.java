@@ -59,10 +59,12 @@ import com.odoo.core.utils.OResource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class TimeSheet extends BaseFragment implements
         AdapterView.OnItemSelectedListener, View.OnClickListener,
-        LoaderManager.LoaderCallbacks<Cursor>, OCursorListAdapter.OnViewBindListener, IOnItemClickListener {
+        LoaderManager.LoaderCallbacks<Cursor>, OCursorListAdapter.OnViewBindListener,
+        IOnItemClickListener {
     public static final String TAG = TimeSheet.class.getSimpleName();
     private View mView;
     private Cursor mCursor;
@@ -74,7 +76,7 @@ public class TimeSheet extends BaseFragment implements
     private Chronometer mChronometer;
     private Context mContext = null;
     private Button btnStartStop;
-    private TextView txvProjecName;
+    private TextView txvProjecName, txvMotivation;
     private ListView lstTaskList;
     private OCursorListAdapter mAdapter = null;
     public static final String PROJECT_KEY = "project_id";
@@ -93,6 +95,7 @@ public class TimeSheet extends BaseFragment implements
         mProject = new ProjectProject(mContext, null);
         mChronometer = (Chronometer) mView.findViewById(R.id.chn_chronometer);
         btnStartStop = (Button) mView.findViewById(R.id.btn_start_stop);
+        txvMotivation = (TextView) mView.findViewById(R.id.txv_motivation);
         txvProjecName = (TextView) mView.findViewById(R.id.txv_project_name);
         lstTaskList = (ListView) mView.findViewById(R.id.lst_task_list);
         btnStartStop.setOnClickListener(this);
@@ -104,6 +107,19 @@ public class TimeSheet extends BaseFragment implements
         }
         initSpinners();
         initAdapter();
+        displayMotivationMesssage();
+    }
+
+    private void displayMotivationMesssage() {
+        String[] array = mContext.getResources().getStringArray(R.array.motivation_messages);
+        String randomStr = array[new Random().nextInt(array.length)];
+        txvMotivation.setText(randomStr);
+        txvMotivation.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                txvMotivation.setVisibility(View.GONE);
+            }
+        }, 5000);
     }
 
     public void initSpinners() {
@@ -128,22 +144,20 @@ public class TimeSheet extends BaseFragment implements
     }
 
     @Override
-    public void onViewBind(View view, Cursor cursor, ODataRow row) {
-        mCursor = cursor;
-        TextView txvRowProjectName, txvRowTaskName, txvRowTime;
-        txvRowProjectName = (TextView) view.findViewById(R.id.txvRowProjectName);
-        txvRowTaskName = (TextView) view.findViewById(R.id.txvRowTaskName);
-//        txvRowTime = (TextView) view.findViewById(R.id.txvRowTime);
-        txvRowProjectName.setText(row.getString("project_name"));
-        txvRowTaskName.setText(row.getString("name"));
-//        txvRowTime.setText(row.getString("storeWorkHour"));
+    public List<ODrawerItem> drawerMenus(Context context) {
+        List<ODrawerItem> menu = new ArrayList<>();
+        menu.add(new ODrawerItem(TAG).setTitle(OResource.string(context, R.string.drawer_timesheet_title)).
+                setGroupTitle());
+        menu.add(new ODrawerItem(TAG).setTitle(OResource.string(context, R.string.drawer_timesheet_activities)).
+                setIcon(R.drawable.ic_action_timer)
+                .setInstance(new TimeSheet()));
+        return menu;
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(getActivity(), db().uri(), null, null, null, null);
     }
-
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
@@ -156,19 +170,9 @@ public class TimeSheet extends BaseFragment implements
     }
 
     @Override
-    public List<ODrawerItem> drawerMenus(Context context) {
-        List<ODrawerItem> menu = new ArrayList<>();
-        menu.add(new ODrawerItem(TAG).setTitle(OResource.string(context, R.string.drawer_activities)).
-                setIcon(R.drawable.ic_action_timer)
-                .setInstance(new TimeSheet()));
-        return menu;
-    }
-
-    @Override
     public Class<ProjectTask> database() {
         return ProjectTask.class;
     }
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -184,13 +188,15 @@ public class TimeSheet extends BaseFragment implements
                 startActivity(i);
                 break;
             default:
-
+                Toast.makeText(mContext, OResource.string(mContext, R.string.toast_invalid_choice), Toast.LENGTH_LONG).show();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+    public void onItemSelected(AdapterView<?> parent, View view, int position,
+                               long id) {
         if (!db().isEmptyTable() && position != 0) {
             ODataRow row = db().browse(new String[]{"project_id"}, "name = ?", new String[]{spinnerArray.get(position + 1)});
             ODataRow project = mProject.browse(row.getInt("project_id"));
@@ -206,13 +212,13 @@ public class TimeSheet extends BaseFragment implements
 
     @Override
     public void onClick(View v) {
+        mChronometer.setBase(SystemClock.elapsedRealtime());
         if (btnStartStop.getText().equals("Start")) {
             mChronometer.start();
             btnStartStop.setText("Stop");
         } else {
             ProjectTaskWork ptWork = new ProjectTaskWork(mContext, null);
             mChronometer.stop();
-            mChronometer.setBase(SystemClock.elapsedRealtime());
             OValues values = new OValues();
             values.put("name", "sample");
             values.put("hour", mChronometer.getText().toString());
@@ -237,4 +243,17 @@ public class TimeSheet extends BaseFragment implements
         bundle.putInt(PROJECT_KEY, cr.getInt(cr.getColumnIndex(OColumn.ROW_ID)));
         IntentUtils.startActivity(getActivity(), TimeSheetDetail.class, bundle);
     }
+
+    @Override
+    public void onViewBind(View view, Cursor cursor, ODataRow row) {
+        mCursor = cursor;
+        TextView txvRowProjectName, txvRowTaskName, txvRowTime;
+        txvRowProjectName = (TextView) view.findViewById(R.id.txvRowProjectName);
+        txvRowTaskName = (TextView) view.findViewById(R.id.txvRowTaskName);
+//        txvRowTime = (TextView) view.findViewById(R.id.txvRowTime);
+        txvRowProjectName.setText(row.getString("project_name"));
+        txvRowTaskName.setText(row.getString("name"));
+//        txvRowTime.setText(row.getString("storeWorkHour"));
+    }
+
 }
