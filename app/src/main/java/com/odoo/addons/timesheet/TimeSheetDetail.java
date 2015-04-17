@@ -61,7 +61,8 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
     private ArrayAdapter adapter = null;
     private ProjectTaskWork mPTWork;
     private Context mContext = null;
-    private int mProjectId;
+    private int mTaskId = 0;
+    private String mTaskName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +79,6 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
         sMinutes.setOnSeekBarChangeListener(this);
         edtHour.setOnFocusChangeListener(this);
         edtMinutes.setOnFocusChangeListener(this);
-        initActionBar();
         mContext = this;
         initActionBar();
         initControls();
@@ -88,9 +88,8 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
 
     private void init() {
         Bundle extra = getIntent().getExtras();
-        if (extra != null && extra.containsKey(TimeSheet.PROJECT_KEY)) {
-            //FIXME init Data
-            ODataRow row = mProjTask.browse(extra.getInt(TimeSheet.PROJECT_KEY));
+        if (extra != null && extra.containsKey(TimeSheet.TASK_KEY)) {
+            ODataRow row = mProjTask.browse(extra.getInt(TimeSheet.TASK_KEY));
 //            int h=Integer.parseInt(row.getString("hour").substring())
             spnTask.setSelection(adapter.getPosition(row.getString("name")));
             txvDetailProjName.setText(row.getString("project_name"));
@@ -126,7 +125,7 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
 
 
     private void initTaskSpinner() {
-        mSpinnerArray.add("Select Task");
+        mSpinnerArray.add(OResource.string(this, R.string.label_spinner_select_task));
         for (ODataRow rows : mProjTask.select(new String[]{"name"})) {
             if (!rows.getString("name").equals("false"))
                 mSpinnerArray.add(rows.getString("name"));
@@ -158,14 +157,16 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
                     String time = "";
                     time = hour + "." + min;
                     OValues values = new OValues();
-                    values.put("name", edtWorkSummary.getText().toString());
+                    values.put("name", mTaskName);
                     values.put("hours", time);
                     values.put("date", ODateUtils.getDate());
                     values.put("user_id", OUser.current(this).getUser_id());
-                    values.put("task_id", mProjectId);
+                    values.put("task_id", mTaskId);
                     int id = mPTWork.insert(values);
-                    if (id > 0)
+                    if (id > 0) {
                         Toast.makeText(this, OResource.string(this, R.string.toast_record_inserted), Toast.LENGTH_LONG).show();
+                        onBackPressed();
+                    }
                 }
                 finish();
                 break;
@@ -245,9 +246,10 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         ProjectProject project = new ProjectProject(mContext, null);
         if (position != 0) {
-            ODataRow row = mProjTask.browse(new String[]{"project_id"}, "name = ?", new String[]{mSpinnerArray.get(position)});
+            ODataRow row = mProjTask.browse(new String[]{"id", "name", "project_id"}, "name = ?", new String[]{mSpinnerArray.get(position)});
+            mTaskId = row.getInt("id");
+            mTaskName = mSpinnerArray.get(position).toString();
             ODataRow prow = project.browse(row.getInt("project_id"));
-            mProjectId = prow.getInt("id");
             if (!prow.getString("account_name").equals("false")) {
                 txvDetailProjName.setText(prow.getString("account_name"));
             }

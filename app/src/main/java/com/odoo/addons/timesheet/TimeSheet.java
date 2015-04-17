@@ -67,20 +67,20 @@ public class TimeSheet extends BaseFragment implements
         IOnItemClickListener {
     public static final String TAG = TimeSheet.class.getSimpleName();
     private View mView;
-    private Cursor mCursor;
     private ProjectProject mProject;
     private Spinner spn_task;
     private List<String> project_list = null;
     private ArrayAdapter adapter = null;
-    private List<String> spinnerArray = null;
+    private List<String> mSpinnerArray = null;
     private Chronometer mChronometer;
     private Context mContext = null;
     private Button btnStartStop;
     private TextView txvProjecName, txvMotivation;
     private ListView lstTaskList;
     private OCursorListAdapter mAdapter = null;
-    public static final String PROJECT_KEY = "project_id";
-    private int mProjectId;
+    public static final String TASK_KEY = "task_id";
+    private int mTaskId = 0;
+    private String mTaskName = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -102,7 +102,6 @@ public class TimeSheet extends BaseFragment implements
         btnStartStop.setOnClickListener(this);
         spn_task = (Spinner) mView.findViewById(R.id.spn_tasks);
         spn_task.setOnItemSelectedListener(this);
-        mProject = new ProjectProject(getActivity(), null);
         if (db().isEmptyTable()) {
             parent().sync().requestSync(ProjectTask.AUTHORITY);
         }
@@ -124,14 +123,14 @@ public class TimeSheet extends BaseFragment implements
     }
 
     public void initSpinners() {
-        spinnerArray = new ArrayList();
-        spinnerArray.add("Select Task");
+        mSpinnerArray = new ArrayList();
+        mSpinnerArray.add(OResource.string(mContext, R.string.label_spinner_select_task));
         for (ODataRow rows : db().select(new String[]{"name"})) {
             if (!rows.getString("name").equals("false"))
-                spinnerArray.add(rows.getString("name"));
+                mSpinnerArray.add(rows.getString("name"));
         }
         adapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_spinner_item, spinnerArray);
+                android.R.layout.simple_spinner_item, mSpinnerArray);
         spn_task.setAdapter(adapter);
     }
 
@@ -196,12 +195,12 @@ public class TimeSheet extends BaseFragment implements
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position,
-                               long id) {
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (!db().isEmptyTable() && position != 0) {
-            ODataRow row = db().browse(new String[]{"project_id"}, "name = ?", new String[]{spinnerArray.get(position + 1)});
+            ODataRow row = db().browse(new String[]{"id", "project_id"}, "name = ?", new String[]{mSpinnerArray.get(position)});
+            mTaskId = row.getInt("id");
+            mTaskName = mSpinnerArray.get(position).toString();
             ODataRow project = mProject.browse(row.getInt("project_id"));
-            mProjectId = project.getInt("id");
             if (!project.getString("account_name").equals("false"))
                 txvProjecName.setText(project.getString("account_name"));
         } else
@@ -214,6 +213,10 @@ public class TimeSheet extends BaseFragment implements
 
     @Override
     public void onClick(View v) {
+        String[] result = mChronometer.getText().toString().split(":");
+        String time = "";
+        int hour = Integer.parseInt(result[0].toString());
+        time = (hour > 0) ? hour + "." + result[1] : "0." + result[1];
         mChronometer.setBase(SystemClock.elapsedRealtime());
         if (btnStartStop.getText().equals("Start")) {
             mChronometer.start();
@@ -222,11 +225,11 @@ public class TimeSheet extends BaseFragment implements
             ProjectTaskWork ptWork = new ProjectTaskWork(mContext, null);
             mChronometer.stop();
             OValues values = new OValues();
-            values.put("name", "sample");
-            values.put("hours", mChronometer.getText().toString());
+            values.put("name", mTaskName);
+            values.put("hours", time);
             values.put("date", ODateUtils.getDate());
             values.put("user_id", db().getUser().getUser_id());
-            values.put("task_id", mProjectId + "");
+            values.put("task_id", mTaskId + "");
             int id = ptWork.insert(values);
             if (id > 0)
                 Toast.makeText(mContext, OResource.string(mContext, R.string.toast_record_inserted), Toast.LENGTH_LONG).show();
@@ -243,13 +246,12 @@ public class TimeSheet extends BaseFragment implements
     public void onItemClick(View view, int position) {
         Cursor cr = (Cursor) mAdapter.getItem(position);
         Bundle bundle = new Bundle();
-        bundle.putInt(PROJECT_KEY, cr.getInt(cr.getColumnIndex(OColumn.ROW_ID)));
+        bundle.putInt(TASK_KEY, cr.getInt(cr.getColumnIndex(OColumn.ROW_ID)));
         IntentUtils.startActivity(getActivity(), TimeSheetDetail.class, bundle);
     }
 
     @Override
     public void onViewBind(View view, Cursor cursor, ODataRow row) {
-        mCursor = cursor;
         TextView txvRowProjectName, txvRowTaskName, txvRowTime;
         txvRowProjectName = (TextView) view.findViewById(R.id.txvRowProjectName);
         txvRowTaskName = (TextView) view.findViewById(R.id.txvRowTaskName);

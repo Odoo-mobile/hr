@@ -14,6 +14,7 @@
 
     <string name="drawer_timesheet_title">Timesheet</string>
     <string name="drawer_timesheet_activities">Activities</string>
+    <string name="label_spinner_select_task">Select Task</string>
     <string name="label_create_new">New</string>
     <string name="label_detail_save">Save</string>
     <string name="label_detail_cancel">Discard</string>
