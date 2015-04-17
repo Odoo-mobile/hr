@@ -42,7 +42,6 @@ import com.odoo.core.orm.ODataRow;
 import com.odoo.core.orm.OValues;
 import com.odoo.core.support.OUser;
 import com.odoo.core.utils.OActionBarUtils;
-import com.odoo.core.utils.logger.OLog;
 import com.odoo.core.utils.ODateUtils;
 import com.odoo.core.utils.OResource;
 
@@ -62,6 +61,7 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
     private ArrayAdapter adapter = null;
     private ProjectTaskWork mPTWork;
     private Context mContext = null;
+    private int mProjectId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,18 +79,22 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
         edtHour.setOnFocusChangeListener(this);
         edtMinutes.setOnFocusChangeListener(this);
         initActionBar();
-        init();
         mContext = this;
         initActionBar();
         initControls();
         initTaskSpinner();
+        init();
     }
 
     private void init() {
         Bundle extra = getIntent().getExtras();
         if (extra != null && extra.containsKey(TimeSheet.PROJECT_KEY)) {
             //FIXME init Data
-            OLog.log(">>>>>>> " + extra.getInt(TimeSheet.PROJECT_KEY));
+            ODataRow row = mProjTask.browse(extra.getInt(TimeSheet.PROJECT_KEY));
+//            int h=Integer.parseInt(row.getString("hour").substring())
+            spnTask.setSelection(adapter.getPosition(row.getString("name")));
+            txvDetailProjName.setText(row.getString("project_name"));
+            edtWorkSummary.setText(row.getString("name"));
         }
     }
 
@@ -155,13 +159,15 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
                     time = hour + "." + min;
                     OValues values = new OValues();
                     values.put("name", edtWorkSummary.getText().toString());
-                    values.put("hour", time);
+                    values.put("hours", time);
                     values.put("date", ODateUtils.getDate());
                     values.put("user_id", OUser.current(this).getUser_id());
+                    values.put("task_id", mProjectId);
                     int id = mPTWork.insert(values);
                     if (id > 0)
                         Toast.makeText(this, OResource.string(this, R.string.toast_record_inserted), Toast.LENGTH_LONG).show();
                 }
+                finish();
                 break;
             case R.id.menu_detail_discard:
                 onBackPressed();
@@ -239,8 +245,9 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         ProjectProject project = new ProjectProject(mContext, null);
         if (position != 0) {
-            ODataRow row = mProjTask.browse(new String[]{"project_id"}, "name = ?", new String[]{mSpinnerArray.get(position + 1)});
+            ODataRow row = mProjTask.browse(new String[]{"project_id"}, "name = ?", new String[]{mSpinnerArray.get(position)});
             ODataRow prow = project.browse(row.getInt("project_id"));
+            mProjectId = prow.getInt("id");
             if (!prow.getString("account_name").equals("false")) {
                 txvDetailProjName.setText(prow.getString("account_name"));
             }

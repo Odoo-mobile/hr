@@ -80,6 +80,7 @@ public class TimeSheet extends BaseFragment implements
     private ListView lstTaskList;
     private OCursorListAdapter mAdapter = null;
     public static final String PROJECT_KEY = "project_id";
+    private int mProjectId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -200,6 +201,7 @@ public class TimeSheet extends BaseFragment implements
         if (!db().isEmptyTable() && position != 0) {
             ODataRow row = db().browse(new String[]{"project_id"}, "name = ?", new String[]{spinnerArray.get(position + 1)});
             ODataRow project = mProject.browse(row.getInt("project_id"));
+            mProjectId = project.getInt("id");
             if (!project.getString("account_name").equals("false"))
                 txvProjecName.setText(project.getString("account_name"));
         } else
@@ -221,9 +223,10 @@ public class TimeSheet extends BaseFragment implements
             mChronometer.stop();
             OValues values = new OValues();
             values.put("name", "sample");
-            values.put("hour", mChronometer.getText().toString());
+            values.put("hours", mChronometer.getText().toString());
             values.put("date", ODateUtils.getDate());
             values.put("user_id", db().getUser().getUser_id());
+            values.put("task_id", mProjectId + "");
             int id = ptWork.insert(values);
             if (id > 0)
                 Toast.makeText(mContext, OResource.string(mContext, R.string.toast_record_inserted), Toast.LENGTH_LONG).show();
@@ -250,10 +253,10 @@ public class TimeSheet extends BaseFragment implements
         TextView txvRowProjectName, txvRowTaskName, txvRowTime;
         txvRowProjectName = (TextView) view.findViewById(R.id.txvRowProjectName);
         txvRowTaskName = (TextView) view.findViewById(R.id.txvRowTaskName);
-//        txvRowTime = (TextView) view.findViewById(R.id.txvRowTime);
+        txvRowTime = (TextView) view.findViewById(R.id.txvRowTime);
         txvRowProjectName.setText(row.getString("project_name"));
         txvRowTaskName.setText(row.getString("name"));
-//        txvRowTime.setText(row.getString("storeWorkHour"));
+        txvRowTime.setText(row.getString("storeWorkHour"));
     }
 
 }

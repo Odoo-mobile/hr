@@ -28,6 +28,7 @@ import com.odoo.core.orm.OValues;
 import com.odoo.core.orm.annotation.Odoo;
 import com.odoo.core.orm.fields.OColumn;
 import com.odoo.core.orm.fields.types.ODateTime;
+import com.odoo.core.orm.fields.types.OFloat;
 import com.odoo.core.orm.fields.types.OVarchar;
 import com.odoo.core.support.OUser;
 
@@ -47,8 +48,8 @@ public class ProjectTask extends OModel {
     OColumn work_ids = new OColumn("Work Summary", ProjectTaskWork.class, OColumn.RelationType.OneToMany);
     @Odoo.Functional(depends = {"project_id"}, store = true, method = "storeProjectName")
     OColumn project_name = new OColumn("Project Name", OVarchar.class).setLocalColumn();
-//    @Odoo.Functional(depends = {"work_ids"}, store = true, method = "storeWorkHour")
-//    OColumn work_hour = new OColumn("Project Hour", OFloat.class).setLocalColumn();
+    @Odoo.Functional(depends = {"work_ids"}, store = true, method = "storeWorkHour")
+    OColumn work_hour = new OColumn("Project Hour", OFloat.class).setLocalColumn();
 
     public ProjectTask(Context context, OUser user) {
         super(context, "project.task", user);
@@ -69,8 +70,8 @@ public class ProjectTask extends OModel {
     public String storeWorkHour(OValues value) {
         try {
             if (!value.getString("work_ids").equals("false")) {
-                JSONArray project_id = (JSONArray) value.get("work_ids");
-                return project_id.getString(1);
+                JSONArray works_ids = (JSONArray) value.get("work_ids");
+                return works_ids.getString(1);
             }
         } catch (Exception e) {
             e.printStackTrace();
