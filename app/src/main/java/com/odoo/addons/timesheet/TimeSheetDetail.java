@@ -35,10 +35,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.odoo.R;
-import com.odoo.addons.timesheet.models.ProjectProject;
 import com.odoo.addons.timesheet.models.ProjectTask;
 import com.odoo.addons.timesheet.models.ProjectTaskWork;
-import com.odoo.core.orm.ODataRow;
 import com.odoo.core.orm.OValues;
 import com.odoo.core.support.OUser;
 import com.odoo.core.utils.OActionBarUtils;
@@ -82,19 +80,7 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
         mContext = this;
         initActionBar();
         initControls();
-        initTaskSpinner();
-        init();
-    }
-
-    private void init() {
-        Bundle extra = getIntent().getExtras();
-        if (extra != null && extra.containsKey(TimeSheet.TASK_KEY)) {
-            ODataRow row = mProjTask.browse(extra.getInt(TimeSheet.TASK_KEY));
-//            int h=Integer.parseInt(row.getString("hour").substring())
-            spnTask.setSelection(adapter.getPosition(row.getString("name")));
-            txvDetailProjName.setText(row.getString("project_name"));
-            edtWorkSummary.setText(row.getString("name"));
-        }
+//        initTaskSpinner();
     }
 
     private void initActionBar() {
@@ -125,15 +111,15 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
 
 
     private void initTaskSpinner() {
-        mSpinnerArray.add(OResource.string(this, R.string.label_spinner_select_task));
-        for (ODataRow rows : mProjTask.select(new String[]{"name"})) {
-            if (!rows.getString("name").equals("false"))
-                mSpinnerArray.add(rows.getString("name"));
-        }
-        adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, mSpinnerArray);
-        spnTask.setAdapter(adapter);
-        txvDetailProjName.setVisibility(View.VISIBLE);
+//        mSpinnerArray.add(OResource.string(this, R.string.label_spinner_select_task));
+//        for (ODataRow rows : mProjTask.select(new String[]{"name"})) {
+//            if (!rows.getString("name").equals("false"))
+//                mSpinnerArray.add(rows.getString("name"));
+//        }
+//        adapter = new ArrayAdapter<String>(this,
+//                android.R.layout.simple_spinner_item, mSpinnerArray);
+//        spnTask.setAdapter(adapter);
+//        txvDetailProjName.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -244,17 +230,17 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        ProjectProject project = new ProjectProject(mContext, null);
-        if (position != 0) {
-            ODataRow row = mProjTask.browse(new String[]{"id", "name", "project_id"}, "name = ?", new String[]{mSpinnerArray.get(position)});
-            mTaskId = row.getInt("id");
-            mTaskName = mSpinnerArray.get(position).toString();
-            ODataRow prow = project.browse(row.getInt("project_id"));
-            if (!prow.getString("account_name").equals("false")) {
-                txvDetailProjName.setText(prow.getString("account_name"));
-            }
-        } else
-            txvDetailProjName.setText("");
+//        ProjectProject project = new ProjectProject(mContext, null);
+//        if (position != 0) {
+//            ODataRow row = mProjTask.browse(new String[]{"id", "name", "project_id"}, "name = ?", new String[]{mSpinnerArray.get(position)});
+//            mTaskId = row.getInt("id");
+//            mTaskName = mSpinnerArray.get(position).toString();
+//            ODataRow prow = project.browse(row.getInt("project_id"));
+//            if (!prow.getString("account_name").equals("false")) {
+//                txvDetailProjName.setText(prow.getString("account_name"));
+//            }
+//        } else
+//            txvDetailProjName.setText("");
     }
 
     @Override

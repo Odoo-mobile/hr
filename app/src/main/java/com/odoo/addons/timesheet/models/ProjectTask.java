@@ -45,7 +45,8 @@ public class ProjectTask extends OModel {
     OColumn project_id = new OColumn("Project", ProjectProject.class, OColumn.RelationType.ManyToOne);
     OColumn user_id = new OColumn("Assigned to", ResUsers.class, OColumn.RelationType.ManyToOne);
     OColumn reviewer_id = new OColumn("Reviewer", ResUsers.class, OColumn.RelationType.ManyToOne);
-    OColumn work_ids = new OColumn("Work Summary", ProjectTaskWork.class, OColumn.RelationType.OneToMany);
+    OColumn work_ids = new OColumn("Work Summary", ProjectTaskWork.class, OColumn.RelationType.OneToMany).
+            setRelatedColumn("task_id");
     @Odoo.Functional(depends = {"project_id"}, store = true, method = "storeProjectName")
     OColumn project_name = new OColumn("Project Name", OVarchar.class).setLocalColumn();
     @Odoo.Functional(depends = {"work_ids"}, store = true, method = "storeWorkHour")

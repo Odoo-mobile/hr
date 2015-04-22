@@ -26,12 +26,12 @@ import com.odoo.core.orm.fields.OColumn;
 import com.odoo.core.orm.fields.types.OVarchar;
 import com.odoo.core.support.OUser;
 
-public class HrTimeSheet_Sheet extends OModel {
-    public static final String TAG = HrTimeSheet_Sheet.class.getSimpleName();
+public class HrTimeSheetSheet extends OModel {
+    public static final String TAG = HrTimeSheetSheet.class.getSimpleName();
 
     OColumn name = new OColumn("Name", OVarchar.class);
 
-    public HrTimeSheet_Sheet(Context context, OUser user) {
+    public HrTimeSheetSheet(Context context, OUser user) {
         super(context, "hr.timesheet.sheet", user);
     }
 }

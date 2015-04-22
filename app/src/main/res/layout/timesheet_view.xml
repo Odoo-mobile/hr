@@ -2,26 +2,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:padding="10dp"
-    android:background="@color/primary_material_light"
+    android:padding="@dimen/default_16dp"
+    android:gravity="center"
     android:layout_height="match_parent">
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:gravity="center_horizontal|center_vertical"
         android:orientation="horizontal">
 
-        <Chronometer
-            android:id="@+id/chn_chronometer"
-            android:layout_width="0dp"
+        <com.odoo.addons.timesheet.utils.OChronometer
+            android:id="@+id/chn_Ochronometer"
             android:layout_weight="1"
-            android:gravity="center"
-            android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="30sp"
-            android:fontFamily="@string/font_normal" />
+            android:textSize="35dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/btn_start_stop"
@@ -32,30 +30,8 @@
     </LinearLayout>
 
     <TextView
-        android:paddingTop="10dp"
-        android:id="@+id/txv_project_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:fontFamily="@string/font_normal" />
-
-    <TextView
-        android:paddingTop="10dp"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="@string/font_normal"
-        android:text="@string/label_select_task" />
-
-    <Spinner
-        android:id="@+id/spn_tasks"
-        android:padding="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
         android:id="@+id/txv_motivation"
-        android:paddingTop="10dp"
+        android:paddingTop="20dp"
         android:gravity="center"
         android:layout_width="match_parent"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
@@ -64,17 +40,4 @@
         android:text="Good Morning Have a Nice Day :)"
         android:layout_height="wrap_content" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginTop="10dp"
-        android:background="#ffffff"
-        android:orientation="horizontal">
-
-        <ListView
-            android:id="@+id/lst_task_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
 </LinearLayout>

@@ -1,5 +1,5 @@
 <sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
     android:accountType="com.odoo.auth"
-    android:contentAuthority="com.odoo.hr.addons.timesheet.models.project_task"
+    android:contentAuthority="com.odoo.hr.addons.timesheet.models.hr_timesheet"
     android:supportsUploading="true"
     android:userVisible="true" />

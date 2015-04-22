@@ -37,6 +37,8 @@ public class ProjectTaskWork extends OModel {
     OColumn date = new OColumn("Date", ODateTime.class);
     OColumn user_id = new OColumn("Done By", ResUsers.class, OColumn.RelationType.ManyToOne);
     OColumn task_id = new OColumn("Task Id", ProjectTask.class, OColumn.RelationType.ManyToOne);
+//    OColumn hr_analytic_timesheet_id = new OColumn("Id", HrAnalyticTimeSheet.class,
+//            OColumn.RelationType.ManyToOne);
 
     public ProjectTaskWork(Context context, OUser user) {
         super(context, "project.task.work", user);
