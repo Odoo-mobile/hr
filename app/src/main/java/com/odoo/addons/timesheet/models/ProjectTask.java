@@ -20,7 +20,6 @@
 package com.odoo.addons.timesheet.models;
 
 import android.content.Context;
-import android.net.Uri;
 
 import com.odoo.base.addons.res.ResUsers;
 import com.odoo.core.orm.OModel;
@@ -28,7 +27,6 @@ import com.odoo.core.orm.OValues;
 import com.odoo.core.orm.annotation.Odoo;
 import com.odoo.core.orm.fields.OColumn;
 import com.odoo.core.orm.fields.types.ODateTime;
-import com.odoo.core.orm.fields.types.OFloat;
 import com.odoo.core.orm.fields.types.OVarchar;
 import com.odoo.core.support.OUser;
 
@@ -38,7 +36,6 @@ import odoo.ODomain;
 
 public class ProjectTask extends OModel {
     public static final String TAG = ProjectTask.class.getSimpleName();
-    public static final String AUTHORITY = "com.odoo.hr.addons.timesheet.models.project_task";
 
     OColumn name = new OColumn("Task Name", OVarchar.class).setSize(128).setRequired();
     OColumn date_deadline = new OColumn("Deadline", ODateTime.class);
@@ -49,8 +46,8 @@ public class ProjectTask extends OModel {
             setRelatedColumn("task_id");
     @Odoo.Functional(depends = {"project_id"}, store = true, method = "storeProjectName")
     OColumn project_name = new OColumn("Project Name", OVarchar.class).setLocalColumn();
-    @Odoo.Functional(depends = {"work_ids"}, store = true, method = "storeWorkHour")
-    OColumn work_hour = new OColumn("Project Hour", OFloat.class).setLocalColumn();
+//    @Odoo.Functional(depends = {"work_ids"}, store = true, method = "storeWorkHour")
+//    OColumn work_hour = new OColumn("Project Hour", OFloat.class).setLocalColumn();
 
     public ProjectTask(Context context, OUser user) {
         super(context, "project.task", user);
@@ -68,28 +65,23 @@ public class ProjectTask extends OModel {
         return "";
     }
 
-    public String storeWorkHour(OValues value) {
-        try {
-            if (!value.getString("work_ids").equals("false")) {
-                JSONArray works_ids = (JSONArray) value.get("work_ids");
-                return works_ids.getString(1);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
+//    public String storeWorkHour(OValues value) {
+//        try {
+//            if (!value.getString("work_ids").equals("false")) {
+//                JSONArray works_ids = (JSONArray) value.get("work_ids");
+//                return works_ids.getString(1);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return "";
+//    }
 
     @Override
     public ODomain defaultDomain() {
         ODomain domain = new ODomain();
         domain.add("user_id", "=", getUser().getUser_id());
         return domain;
-    }
-
-    @Override
-    public Uri uri() {
-        return buildURI(AUTHORITY);
     }
 
 }

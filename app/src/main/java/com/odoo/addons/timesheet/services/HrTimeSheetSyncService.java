@@ -20,23 +20,36 @@
 package com.odoo.addons.timesheet.services;
 
 import android.content.Context;
+import android.content.SyncResult;
 import android.os.Bundle;
 
 import com.odoo.addons.timesheet.models.HrAnalyticTimeSheet;
+import com.odoo.addons.timesheet.models.ProjectTask;
+import com.odoo.core.service.ISyncFinishListener;
 import com.odoo.core.service.OSyncAdapter;
 import com.odoo.core.service.OSyncService;
 import com.odoo.core.support.OUser;
 
-public class HrTimeSheetSyncService extends OSyncService {
+public class HrTimeSheetSyncService extends OSyncService implements ISyncFinishListener {
     public static final String TAG = HrTimeSheetSyncService.class.getSimpleName();
+    private Context mContext = null;
 
     @Override
     public OSyncAdapter getSyncAdapter(OSyncService service, Context context) {
+        mContext = context;
         return new OSyncAdapter(context, HrAnalyticTimeSheet.class, this, true);
     }
 
     @Override
     public void performDataSync(OSyncAdapter adapter, Bundle extras, OUser user) {
-        adapter.syncDataLimit(30);
+        if (adapter.getModel().getModelName().equals("hr.analytic.timesheet")) {
+            adapter.syncDataLimit(30);
+            adapter.onSyncFinish(this);
+        }
+    }
+
+    @Override
+    public OSyncAdapter performNextSync(OUser user, SyncResult syncResult) {
+        return new OSyncAdapter(mContext, ProjectTask.class, this, true);
     }
 }
