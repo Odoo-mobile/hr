@@ -32,8 +32,7 @@ import com.odoo.core.support.OUser;
 
 public class HrAnalyticTimeSheet extends OModel {
     public static final String TAG = HrAnalyticTimeSheet.class.getSimpleName();
-    public static final String AUTHORITY = "com.odoo.hr.addons.timesheet.models.hr_time_sheet";
-    private Context mContext = null;
+    public static final String AUTHORITY = "com.odoo.hr.addons.timesheet.models.hr_timesheet";
 
     OColumn name = new OColumn("Description", OVarchar.class).setSize(64);
     OColumn unit_amount = new OColumn("Duration", OFloat.class);
@@ -42,14 +41,16 @@ public class HrAnalyticTimeSheet extends OModel {
 
     OColumn user_id = new OColumn("User", ResUsers.class, OColumn.RelationType.ManyToOne);
     OColumn product_id = new OColumn("Product", ProductProduct.class, OColumn.RelationType.ManyToOne);
-    OColumn account_id = new OColumn("Analytic Account", AccountAnalyticAccount.class, OColumn.RelationType.ManyToOne);
-    OColumn general_account_id = new OColumn("Financial Account", AccountAccount.class, OColumn.RelationType.ManyToOne);
-    OColumn journal_id = new OColumn("Analytic Journal", AccountAnalyticJournal.class, OColumn.RelationType.ManyToOne);
-    OColumn sheet_id = new OColumn("Sheet", HrTimeSheet_Sheet.class, OColumn.RelationType.ManyToOne);
+    OColumn account_id = new OColumn("Analytic Account", AccountAnalyticAccount.class,
+            OColumn.RelationType.ManyToOne);
+    OColumn general_account_id = new OColumn("Financial Account", AccountAccount.class,
+            OColumn.RelationType.ManyToOne);
+    OColumn journal_id = new OColumn("Analytic Journal", AccountAnalyticJournal.class,
+            OColumn.RelationType.ManyToOne);
+    OColumn sheet_id = new OColumn("Sheet", HrTimeSheetSheet.class, OColumn.RelationType.ManyToOne);
 
     public HrAnalyticTimeSheet(Context context, OUser user) {
         super(context, "hr.analytic.timesheet", user);
-        mContext = context;
     }
 
     @Override

@@ -101,22 +101,22 @@
             android:multiprocess="true" />
 
         <provider
-            android:name=".addons.timesheet.providers.ProjectTaskProvider"
-            android:authorities="com.odoo.hr.addons.timesheet.models.project_task"
-            android:label="ProjectTask"
+            android:name=".addons.timesheet.providers.HrTimesheetProvider"
+            android:authorities="com.odoo.hr.addons.timesheet.models.hr_timesheet"
+            android:label="Timesheet"
             android:multiprocess="true" />
 
         <service
-            android:name=".addons.timesheet.services.ProjectTaskSyncService"
+            android:name=".addons.timesheet.services.HrTimeSheetSyncService"
             android:exported="true"
-            android:process=":sync_project_task">
+            android:process=":sync_timesheet">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
 
             <meta-data
                 android:name="android.content.SyncAdapter"
-                android:resource="@xml/project_task_sync_adapter" />
+                android:resource="@xml/timesheet_sync_adapter" />
         </service>
     </application>
 

@@ -20,9 +20,9 @@
 package com.odoo.addons.timesheet.models;
 
 import android.content.Context;
-import android.net.Uri;
 
 import com.odoo.base.addons.res.ResUsers;
+import com.odoo.core.orm.ODataRow;
 import com.odoo.core.orm.OModel;
 import com.odoo.core.orm.OValues;
 import com.odoo.core.orm.annotation.Odoo;
@@ -31,6 +31,7 @@ import com.odoo.core.orm.fields.types.ODateTime;
 import com.odoo.core.orm.fields.types.OFloat;
 import com.odoo.core.orm.fields.types.OVarchar;
 import com.odoo.core.support.OUser;
+import com.odoo.core.utils.logger.OLog;
 
 import org.json.JSONArray;
 
@@ -38,14 +39,14 @@ import odoo.ODomain;
 
 public class ProjectTask extends OModel {
     public static final String TAG = ProjectTask.class.getSimpleName();
-    public static final String AUTHORITY = "com.odoo.hr.addons.timesheet.models.project_task";
-
+    public Context mContext;
     OColumn name = new OColumn("Task Name", OVarchar.class).setSize(128).setRequired();
     OColumn date_deadline = new OColumn("Deadline", ODateTime.class);
     OColumn project_id = new OColumn("Project", ProjectProject.class, OColumn.RelationType.ManyToOne);
     OColumn user_id = new OColumn("Assigned to", ResUsers.class, OColumn.RelationType.ManyToOne);
     OColumn reviewer_id = new OColumn("Reviewer", ResUsers.class, OColumn.RelationType.ManyToOne);
-    OColumn work_ids = new OColumn("Work Summary", ProjectTaskWork.class, OColumn.RelationType.OneToMany).setRelatedColumn("task_id");
+    OColumn work_ids = new OColumn("Work Summary", ProjectTaskWork.class, OColumn.RelationType.OneToMany).
+            setRelatedColumn("task_id");
     @Odoo.Functional(depends = {"project_id"}, store = true, method = "storeProjectName")
     OColumn project_name = new OColumn("Project Name", OVarchar.class).setLocalColumn();
     @Odoo.Functional(depends = {"work_ids"}, store = true, method = "storeWorkHour")
@@ -53,6 +54,7 @@ public class ProjectTask extends OModel {
 
     public ProjectTask(Context context, OUser user) {
         super(context, "project.task", user);
+        mContext = context;
     }
 
     public String storeProjectName(OValues value) {
@@ -67,16 +69,26 @@ public class ProjectTask extends OModel {
         return "";
     }
 
-    public String storeWorkHour(OValues value) {
+    public Float storeWorkHour(OValues value) {
         try {
-//            if (!value.getString("work_ids").equals("false")) {
-//                JSONArray works_ids = (JSONArray) value.get("work_ids");
-//                return works_ids.getString(1);
-//            }
+            ProjectTaskWork ptWork = new ProjectTaskWork(mContext, null);
+            float hours = 0.0f;
+            JSONArray works_ids = (JSONArray) value.get("work_ids");
+            ODataRow row = null;
+            if (works_ids.length() > 0) {
+                for (int i = 0; i < works_ids.length(); i++) {
+                    OLog.log("Work id:" + works_ids.getInt(i));
+                    row = ptWork.browse(ptWork.projection(), "id = ?",
+                            new String[]{works_ids.getInt(i) + ""});
+                    OLog.log("row :" + row.getInt("id") + " : " + row.getString("hours") + "  :  " + row);
+                }
+                return hours;
+            } else
+                return 0.0f;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "";
+        return 0.0f;
     }
 
     @Override
@@ -84,11 +96,6 @@ public class ProjectTask extends OModel {
         ODomain domain = new ODomain();
         domain.add("user_id", "=", getUser().getUser_id());
         return domain;
-    }
-
-    @Override
-    public Uri uri() {
-        return buildURI(AUTHORITY);
     }
 
 }

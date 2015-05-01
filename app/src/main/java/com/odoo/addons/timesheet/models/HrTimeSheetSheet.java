@@ -15,18 +15,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http:www.gnu.org/licenses/>
  *
- * Created on 13/4/15 4:34 PM
+ * Created on 25/3/15 3:02 PM
  */
-package com.odoo.addons.timesheet.providers;
+package com.odoo.addons.timesheet.models;
 
-import com.odoo.addons.timesheet.models.ProjectTask;
-import com.odoo.core.orm.provider.BaseModelProvider;
+import android.content.Context;
 
-public class ProjectTaskProvider extends BaseModelProvider {
-    public static final String TAG = ProjectTaskProvider.class.getSimpleName();
+import com.odoo.core.orm.OModel;
+import com.odoo.core.orm.fields.OColumn;
+import com.odoo.core.orm.fields.types.OVarchar;
+import com.odoo.core.support.OUser;
 
-    @Override
-    public String authority() {
-        return ProjectTask.AUTHORITY;
+public class HrTimeSheetSheet extends OModel {
+    public static final String TAG = HrTimeSheetSheet.class.getSimpleName();
+
+    OColumn name = new OColumn("Name", OVarchar.class);
+
+    public HrTimeSheetSheet(Context context, OUser user) {
+        super(context, "hr.timesheet.sheet", user);
     }
 }

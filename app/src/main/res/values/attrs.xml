@@ -71,4 +71,8 @@
     <declare-styleable name="MailChatterView">
         <attr name="resModelName" format="string" />
     </declare-styleable>
+    <declare-styleable name="OChronometer">
+        <attr name="delayTime" format="integer" />
+        <attr name="intervalTime" format="integer" />
+    </declare-styleable>
 </resources>

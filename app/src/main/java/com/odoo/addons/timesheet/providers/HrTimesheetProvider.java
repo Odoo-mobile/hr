@@ -15,28 +15,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http:www.gnu.org/licenses/>
  *
- * Created on 13/4/15 4:41 PM
+ * Created on 20/4/15 4:59 PM
  */
-package com.odoo.addons.timesheet.services;
+package com.odoo.addons.timesheet.providers;
 
-import android.content.Context;
-import android.os.Bundle;
+import com.odoo.addons.timesheet.models.HrAnalyticTimeSheet;
+import com.odoo.core.orm.provider.BaseModelProvider;
 
-import com.odoo.addons.timesheet.models.ProjectTask;
-import com.odoo.core.service.OSyncAdapter;
-import com.odoo.core.service.OSyncService;
-import com.odoo.core.support.OUser;
-
-public class ProjectTaskSyncService extends OSyncService {
-    public static final String TAG = ProjectTaskSyncService.class.getSimpleName();
+public class HrTimesheetProvider extends BaseModelProvider {
+    public static final String TAG = HrTimesheetProvider.class.getSimpleName();
 
     @Override
-    public OSyncAdapter getSyncAdapter(OSyncService service, Context context) {
-        return new OSyncAdapter(context, ProjectTask.class, this, true);
-    }
-
-    @Override
-    public void performDataSync(OSyncAdapter adapter, Bundle extras, OUser user) {
-        adapter.syncDataLimit(30);
+    public String authority() {
+        return HrAnalyticTimeSheet.AUTHORITY;
     }
 }
