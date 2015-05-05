@@ -19,14 +19,18 @@ package com.odoo.addons.hr.services; /**
  */
 
 import android.content.Context;
+import android.content.SyncResult;
 import android.os.Bundle;
 
 import com.odoo.addons.hr.models.HrHolidays;
+import com.odoo.addons.hr.models.HrHolidaysStatus;
+import com.odoo.core.service.ISyncFinishListener;
 import com.odoo.core.service.OSyncAdapter;
 import com.odoo.core.service.OSyncService;
 import com.odoo.core.support.OUser;
+import com.odoo.core.utils.logger.OLog;
 
-public class HrHolidaysSyncService extends OSyncService {
+public class HrHolidaysSyncService extends OSyncService implements ISyncFinishListener {
     public static final String TAG = HrHolidaysSyncService.class.getSimpleName();
 
     @Override
@@ -36,6 +40,15 @@ public class HrHolidaysSyncService extends OSyncService {
 
     @Override
     public void performDataSync(OSyncAdapter adapter, Bundle extras, OUser user) {
-        adapter.syncDataLimit(40);
+        if (adapter.getModel().getModelName().equals("hr.holidays")) {
+            adapter.syncDataLimit(40);
+            adapter.onSyncFinish(this);
+        }
+    }
+
+    @Override
+    public OSyncAdapter performNextSync(OUser user, SyncResult syncResult) {
+        OLog.log("Syncing");
+        return new OSyncAdapter(getApplicationContext(), HrHolidaysStatus.class, this, true);
     }
 }

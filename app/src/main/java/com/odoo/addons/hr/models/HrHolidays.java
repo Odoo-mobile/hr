@@ -19,6 +19,7 @@ package com.odoo.addons.hr.models; /**
  */
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 
 import com.odoo.core.orm.OModel;
@@ -82,5 +83,19 @@ public class HrHolidays extends OModel {
             e.printStackTrace();
         }
         return "";
+    }
+
+    public int setStateView(String state) {
+        int color = 0;
+        if (state.equals("validate")) {
+            color = Color.GREEN;
+        } else if (state.equals("cancel")) {
+            color = Color.RED;
+        } else if (state.equals("draft")) {
+            color = Color.GRAY;
+        } else if (state.equals("confirm")) {
+            color = Color.BLUE;
+        }
+        return color;
     }
 }

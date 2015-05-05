@@ -544,4 +544,5 @@ public class OSyncAdapter extends AbstractThreadedSyncAdapter {
         mSyncFinishListeners.put(mModel.getModelName(), syncFinish);
         return this;
     }
+
 }

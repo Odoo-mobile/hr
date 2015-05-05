@@ -19,6 +19,7 @@
  */
 package com.odoo.config;
 
+import com.odoo.addons.hr.HrLeaveSummary;
 import com.odoo.addons.hr.HrHolidayList;
 import com.odoo.core.support.addons.AddonsHelper;
 import com.odoo.core.support.addons.OAddon;
@@ -32,5 +33,6 @@ public class Addons extends AddonsHelper {
      * OAddon partners = new OAddon(Partners.class).setDefault();
      */
 
-    OAddon hrHoliday = new OAddon(HrHolidayList.class);
+    OAddon a_hrHoliday = new OAddon(HrHolidayList.class);
+    OAddon b_hrGridExample = new OAddon(HrLeaveSummary.class);
 }

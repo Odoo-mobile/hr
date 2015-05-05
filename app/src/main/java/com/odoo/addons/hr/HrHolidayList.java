@@ -44,7 +44,6 @@ import com.odoo.core.support.list.OCursorListAdapter;
 import com.odoo.core.utils.IntentUtils;
 import com.odoo.core.utils.OControls;
 import com.odoo.core.utils.OCursorUtils;
-import com.odoo.core.utils.logger.OLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,9 +58,10 @@ public class HrHolidayList extends BaseFragment implements ISyncStatusObserverLi
     private ListView mList = null;
     private View mView = null;
     private Bundle extra = null;
+    private HrHolidays holidays = null;
 
     public enum Type {
-        LEAVE_REQUEST, ALLOCATION_REQUEST, LEAVE_SUMMARY
+        LEAVE_REQUEST, ALLOCATION_REQUEST, LEAVE_SUMMARY, EXAMPLE
     }
 
     @Override
@@ -75,20 +75,19 @@ public class HrHolidayList extends BaseFragment implements ISyncStatusObserverLi
         super.onViewCreated(view, savedInstanceState);
         mView = view;
         extra = getArguments();
+        holidays = new HrHolidays(getActivity(), user());
         setHasSyncStatusObserver(TAG, this, db());
         initAdapter();
     }
 
     @Override
     public List<ODrawerItem> drawerMenus(Context context) {
-        List<ODrawerItem> menu = new ArrayList<ODrawerItem>();
+        List<ODrawerItem> menu = new ArrayList<>();
         menu.add(new ODrawerItem(TAG).setGroupTitle().setTitle("Leaves"));
         menu.add(new ODrawerItem(TAG).setTitle("Leave Request").setInstance(new HrHolidayList()).
                 setExtra(data(Type.LEAVE_REQUEST)));
         menu.add(new ODrawerItem(TAG).setTitle("Allocation Request").setInstance(new HrHolidayList()).
                 setExtra(data(Type.ALLOCATION_REQUEST)));
-        menu.add(new ODrawerItem(TAG).setTitle("Leave Summary").setInstance(new HrHolidayList()).
-                setExtra(data(Type.LEAVE_SUMMARY)));
         return menu;
     }
 
@@ -120,6 +119,11 @@ public class HrHolidayList extends BaseFragment implements ISyncStatusObserverLi
         OControls.setText(view, R.id.holidayDisc, row.getString("name"));
         OControls.setText(view, R.id.holidayDateFrom, row.getString("date_from"));
         OControls.setText(view, R.id.holidayDateTo, row.getString("date_to"));
+        view.findViewById(R.id.list_StateView).setBackgroundColor(holidays.setStateView(row.
+                getString("state")));
+        if (extra.getString(KEY_MENU) == Type.ALLOCATION_REQUEST.toString()) {
+            OControls.setGone(view, R.id.dateFromTo);
+        }
 //        if (extra.containsKey(Type.ALLOCATION_REQUEST.toString())) {
 //            OControls.setVisible(view, R.id.notes);
 //            OControls.setText(view, R.id.notes, row.getString("notes"));
@@ -139,11 +143,11 @@ public class HrHolidayList extends BaseFragment implements ISyncStatusObserverLi
             if (extra.getString(HrHolidayList.KEY_MENU) == Type.LEAVE_REQUEST.toString()) {
                 where = "type = ?";
                 whereArgs = new String[]{"remove"};
-            }else if (extra.getString(HrHolidayList.KEY_MENU) == Type.ALLOCATION_REQUEST.toString()) {
+            } else if (extra.getString(HrHolidayList.KEY_MENU) == Type.ALLOCATION_REQUEST.toString()) {
                 where = "type = ?";
                 whereArgs = new String[]{"add"};
             } else if (extra.getString(HrHolidayList.KEY_MENU) == Type.LEAVE_SUMMARY.toString()) {
-                where = "(holiday_type = ? and state != ?))"; // group by ((holiday_status_id)";
+                where = "holiday_type = ? and state != ?";
                 whereArgs = new String[]{"employee", "refuse"};
             }
         return new CursorLoader(getActivity(), db().uri(), null, where, whereArgs, null);
@@ -152,12 +156,6 @@ public class HrHolidayList extends BaseFragment implements ISyncStatusObserverLi
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         mCursorListAdapter.changeCursor(cursor);
-        OLog.log("Load Finished");
-        if (cursor.moveToFirst()) {
-            while (cursor.moveToNext()) {
-                OLog.log("DATA" + cursor.getString(cursor.getColumnIndex("name")));
-            }
-        }
         if (cursor.getCount() > 0) {
             new Handler().postDelayed(new Runnable() {
                 @Override

@@ -17,6 +17,14 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
         app:theme="@style/ToolBarTheme" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/statusTitle"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:gravity="center_horizontal"
+        android:visibility="gone" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -50,6 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:fieldName="holiday_status_id"
+                android:id="@+id/statusId"
                 app:widgetType="SearchableLive"></odoo.controls.OField>
 
             <View style="@style/ViewSeparator" />

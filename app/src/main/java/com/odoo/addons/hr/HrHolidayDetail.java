@@ -26,6 +26,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.odoo.R;
 import com.odoo.addons.hr.models.HrHolidays;
@@ -86,25 +87,30 @@ public class HrHolidayDetail extends ActionBarActivity {
 
     private void init() {
         mForm = (OForm) findViewById(R.id.hrDetail);
+        actionBar.setTitle(R.string.label_new);
         if (!bundle.containsKey(OColumn.ROW_ID)) {
             mForm.initForm(null);
             actionBar.setTitle(R.string.label_new);
+            if (bundle.containsKey("holiday_status_id")) {
+                HrHolidaysStatus status = new HrHolidaysStatus(this, null);
+                ODataRow row = status.browse(bundle.getInt("holiday_status_id"));
+                TextView viewTitle = (TextView) findViewById(R.id.statusTitle);
+                viewTitle.setText(row.getString("name"));
+                viewTitle.setVisibility(View.VISIBLE);
+                mForm.findViewById(R.id.statusId).setVisibility(View.GONE);
+                viewTitle.setBackgroundColor(Color.parseColor(row.getString("color_name").
+                        toUpperCase()));
+            }
         } else {
             initFormValues();
-            if (record.getString("state").equals("validate")) {
-                mForm.findViewById(R.id.viewState).setBackgroundColor(Color.GREEN);
-            } else if (record.getString("state").equals("cancel")) {
-                mForm.findViewById(R.id.viewState).setBackgroundColor(Color.RED);
-            } else if (record.getString("state").equals("draft")) {
-                mForm.findViewById(R.id.viewState).setBackgroundColor(Color.GRAY);
-            } else if (record.getString("state").equals("confirm")) {
-                mForm.findViewById(R.id.viewState).setBackgroundColor(Color.BLUE);
-            }
+            mForm.findViewById(R.id.viewState).setBackgroundColor(holidays.setStateView(record.
+                    getString("state")));
+
         }
         actionBar.setHomeAsUpIndicator(R.drawable.ic_action_navigation_close);
         mForm.setEditable(true);
         mForm.findViewById(R.id.note).setVisibility(View.GONE);
-        if (bundle.getString(HrHolidayList.KEY_MENU).equals(HrHolidayList.Type.ALLOCATION_REQUEST.
+        if (bundle.containsKey(HrHolidayList.KEY_MENU) && bundle.getString(HrHolidayList.KEY_MENU).equals(HrHolidayList.Type.ALLOCATION_REQUEST.
                 toString())) {
             mForm.findViewById(R.id.dateSelection).setVisibility(View.GONE);
             mForm.findViewById(R.id.note).setVisibility(View.VISIBLE);
