@@ -1,20 +1,20 @@
 /**
  * Odoo, Open Source Management Solution
  * Copyright (C) 2012-today Odoo SA (<http:www.odoo.com>)
- *
+ * <p/>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version
- *
+ * <p/>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details
- *
+ * <p/>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http:www.gnu.org/licenses/>
- *
+ * <p/>
  * Created on 23/3/15 3:48 PM
  */
 package com.odoo.addons.timesheet;
@@ -151,10 +151,11 @@ public class TimeSheet extends BaseFragment implements View.OnClickListener,
 //        time = (hour > 0) ? hour + "." + result[1] : "0." + result[1];
 //        mChronometer.setBase(SystemClock.elapsedRealtime());
         if (btnStartStop.getText().equals("Start")) {
-            mOchronometer.getBase();
+            btnStartStop.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, getResources().getDrawable(R.drawable.ic_action_stop), null);
             mOchronometer.start();
             btnStartStop.setText("Stop");
         } else {
+            btnStartStop.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, getResources().getDrawable(R.drawable.ic_action_play), null);
             mOchronometer.getBase();
             mOchronometer.stop();
 //            ProjectTaskWork ptWork = new ProjectTaskWork(mContext, null);

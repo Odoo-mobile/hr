@@ -1,20 +1,20 @@
 /**
  * Odoo, Open Source Management Solution
  * Copyright (C) 2012-today Odoo SA (<http:www.odoo.com>)
- *
+ * <p/>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version
- *
+ * <p/>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details
- *
+ * <p/>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http:www.gnu.org/licenses/>
- *
+ * <p/>
  * Created on 24/3/15 12:30 PM
  */
 package com.odoo.addons.timesheet;
@@ -146,7 +146,7 @@ public class TimeSheetDetail extends ActionBarActivity implements SeekBar.OnSeek
                     values.put("name", mTaskName);
                     values.put("hours", time);
                     values.put("date", ODateUtils.getDate());
-                    values.put("user_id", OUser.current(this).getUser_id());
+                    values.put("user_id", OUser.current(this).getUserId());
                     values.put("task_id", mTaskId);
                     int id = mPTWork.insert(values);
                     if (id > 0) {
