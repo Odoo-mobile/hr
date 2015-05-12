@@ -32,32 +32,47 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.odoo.R;
 import com.odoo.addons.timesheet.models.HrAnalyticTimeSheet;
+import com.odoo.addons.timesheet.models.ProjectTask;
+import com.odoo.addons.timesheet.models.ProjectTaskWork;
 import com.odoo.addons.timesheet.utils.OChronometer;
+import com.odoo.core.orm.ODataRow;
+import com.odoo.core.orm.OValues;
 import com.odoo.core.support.addons.fragment.BaseFragment;
 import com.odoo.core.support.drawer.ODrawerItem;
+import com.odoo.core.support.list.IOnItemClickListener;
 import com.odoo.core.support.list.OCursorListAdapter;
+import com.odoo.core.utils.IntentUtils;
+import com.odoo.core.utils.OControls;
+import com.odoo.core.utils.OCursorUtils;
+import com.odoo.core.utils.ODateUtils;
 import com.odoo.core.utils.OResource;
+import com.odoo.core.utils.logger.OLog;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import odoo.controls.fab.FloatingActionButton;
+
 public class TimeSheet extends BaseFragment implements View.OnClickListener,
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, OCursorListAdapter.OnViewBindListener, IOnItemClickListener, OCursorListAdapter.OnRowViewClickListener {
     public static final String TAG = TimeSheet.class.getSimpleName();
     private View mView;
     private Context mContext = null;
-    private Button btnStartStop;
+    private FloatingActionButton mFabButton;
     private TextView txvMotivation;
     private OCursorListAdapter mAdapter = null;
     private OChronometer mOchronometer;
-    public static final String TASK_KEY = "task_id";
+    private ListView mListView;
+    private boolean flag = false;
+    private ImageView imgStartStop;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -70,14 +85,25 @@ public class TimeSheet extends BaseFragment implements View.OnClickListener,
         setHasOptionsMenu(true);
         mView = view;
         mContext = getActivity();
-        mOchronometer = (OChronometer) mView.findViewById(R.id.chn_Ochronometer);
-        btnStartStop = (Button) mView.findViewById(R.id.btn_start_stop);
+        mListView = (ListView) mView.findViewById(R.id.lst_task_listview);
+        mFabButton = (FloatingActionButton) mView.findViewById(R.id.fab_button);
         txvMotivation = (TextView) mView.findViewById(R.id.txv_motivation);
-        btnStartStop.setOnClickListener(this);
+        mFabButton.setOnClickListener(this);
         if (db().isEmptyTable()) {
             parent().sync().requestSync(HrAnalyticTimeSheet.AUTHORITY);
         }
+        initListView();
         displayMotivationMesssage();
+    }
+
+    private void initListView() {
+        setHasFloatingButton(mView, R.id.fab_button, mListView, this);
+        mAdapter = new OCursorListAdapter(mContext, null, R.layout.timesheet_row_view);
+        mAdapter.setOnViewBindListener(this);
+        mAdapter.setOnRowViewClickListener(R.id.img_start_stop, this);
+        mListView.setAdapter(mAdapter);
+        mAdapter.handleItemClickListener(mListView, this);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     private void displayMotivationMesssage() {
@@ -119,8 +145,8 @@ public class TimeSheet extends BaseFragment implements View.OnClickListener,
     }
 
     @Override
-    public Class<HrAnalyticTimeSheet> database() {
-        return HrAnalyticTimeSheet.class;
+    public Class<ProjectTask> database() {
+        return ProjectTask.class;
     }
 
     @Override
@@ -132,10 +158,6 @@ public class TimeSheet extends BaseFragment implements View.OnClickListener,
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_create_new:
-                Intent i = new Intent(getActivity(), TimeSheetDetail.class);
-                startActivity(i);
-                break;
             default:
                 Toast.makeText(mContext, OResource.string(mContext, R.string.toast_invalid_choice), Toast.LENGTH_LONG).show();
                 break;
@@ -145,31 +167,82 @@ public class TimeSheet extends BaseFragment implements View.OnClickListener,
 
     @Override
     public void onClick(View v) {
-//        String[] result = mChronometer.getText().toString().split(":");
-//        String time = "";
-//        int hour = Integer.parseInt(result[0].toString());
-//        time = (hour > 0) ? hour + "." + result[1] : "0." + result[1];
-//        mChronometer.setBase(SystemClock.elapsedRealtime());
-        if (btnStartStop.getText().equals("Start")) {
-            btnStartStop.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, getResources().getDrawable(R.drawable.ic_action_stop), null);
-            mOchronometer.start();
-            btnStartStop.setText("Stop");
-        } else {
-            btnStartStop.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, getResources().getDrawable(R.drawable.ic_action_play), null);
-            mOchronometer.getBase();
-            mOchronometer.stop();
-//            ProjectTaskWork ptWork = new ProjectTaskWork(mContext, null);
-//            OValues values = new OValues();
-//            values.put("name", mTaskName);
-//            values.put("hours", time);
-//            values.put("date", ODateUtils.getDate());
-//            values.put("user_id", db().getUser().getUser_id());
-//            values.put("task_id", mTaskId + "");
-//            int id = ptWork.insert(values);
-//            if (id > 0)
-//                Toast.makeText(mContext, OResource.string(mContext, R.string.toast_record_inserted), Toast.LENGTH_LONG).show();
-            btnStartStop.setText("Start");
+        int id = v.getId();
+        switch (id) {
+            case R.id.fab_button:
+                Intent i = new Intent(getActivity(), TimeSheetDetail.class);
+                startActivity(i);
+                break;
         }
+
     }
 
+    @Override
+    public void onViewBind(View view, Cursor cursor, ODataRow row) {
+        OControls.setText(view, R.id.txv_project_name, row.getString("project_name"));
+        OControls.setText(view, R.id.txv_task_name, row.getString("name"));
+//        if (!row.getString("work_hour").equals("false")) {
+//            OControls.setText(view, R.id.txv_spent_time, String.format("%.2f", Double.parseDouble(row.getString("work_hour"))));
+//        } else
+//            OControls.setText(view, R.id.txv_spent_time, "0.0");
+    }
+
+    @Override
+    public void onItemDoubleClick(View view, int position) {
+
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        ODataRow row = OCursorUtils.toDatarow((Cursor) mAdapter.getItem(position));
+        Bundle bundle = new Bundle();
+        if (!row.getString("work_hour").equals("false"))
+            bundle.putString("hours", row.getString("work_hour"));
+        else
+            bundle.putString("hours", "0.0");
+        bundle.putString("project_name", row.getString("project_name"));
+        bundle.putString("task_name", row.getString("name"));
+        bundle.putInt("task_id", row.getInt("_id"));
+        IntentUtils.startActivity(mContext, TimeSheetDetail.class, bundle);
+    }
+
+    @Override
+    public void onRowViewClick(int position, Cursor cursor, View view, View parent) {
+        switch (view.getId()) {
+            case R.id.img_start_stop:
+                ODataRow row = OCursorUtils.toDatarow(cursor);
+                mOchronometer = (OChronometer) parent.findViewById(R.id.chn_Ochronometer);
+                imgStartStop = (ImageView) parent.findViewById(R.id.img_start_stop);
+                if (flag) {
+                    flag = false;
+                    mOchronometer.stop();
+                    imgStartStop.setImageResource(R.drawable.ic_action_play);
+                    String[] result = mOchronometer.getOChronoText().split(":");
+                    String time = "";
+                    float hour = Float.parseFloat(result[0].toString());
+                    float minutes = Float.parseFloat(result[1].toString());
+                    minutes = minutes / 60;
+                    time = hour + minutes + "";
+                    ProjectTaskWork ptWork = new ProjectTaskWork(mContext, null);
+                    OValues values = new OValues();
+                    values.put("name", row.getString("name"));
+                    values.put("hours", time);
+                    values.put("date", ODateUtils.getDate());
+                    values.put("user_id", db().getUser().getUserId());
+                    values.put("task_id", row.getInt("_id"));
+                    int id = ptWork.insert(values);
+                    if (id > 0)
+                        Toast.makeText(mContext, OResource.string(mContext, R.string.toast_record_inserted), Toast.LENGTH_LONG).show();
+                } else {
+                    flag = true;
+                    mOchronometer.start();
+                    imgStartStop.setImageResource(R.drawable.ic_action_stop);
+                }
+                break;
+            default:
+                OLog.log("Invalid Choice...!");
+                break;
+        }
+
+    }
 }

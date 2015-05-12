@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -11,11 +11,11 @@
         android:layout_height="wrap_content"
         android:background="@color/theme_primary"
         android:minHeight="?attr/actionBarSize"
-        app:titleMarginStart="@dimen/default_16dp"
-        android:paddingTop="@dimen/statusBarHeight"
         android:paddingRight="@dimen/default_8dp"
+        android:paddingTop="@dimen/statusBarHeight"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
-        app:theme="@style/ToolBarTheme" />
+        app:theme="@style/ToolBarTheme"
+        app:titleMarginStart="@dimen/default_16dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,24 +26,23 @@
         <TextView
             android:id="@+id/txvDetailProjetName"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/txvDetailTaskName"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Task Name" />
+            android:layout_height="wrap_content" />
 
         <Spinner
             android:id="@+id/spnDetailTask"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"></Spinner>
+            android:layout_height="wrap_content"
+            android:gravity="left"></Spinner>
 
         <TextView
             android:layout_width="match_parent"
-            android:paddingTop="10dp"
             android:layout_height="wrap_content"
+            android:paddingTop="10dp"
             android:text="@string/label_time_spent" />
 
         <LinearLayout
@@ -59,18 +58,18 @@
                 <SeekBar
                     android:id="@+id/seek_hours"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:max="12"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_height="wrap_content" />
+                    android:layout_weight="1"
+                    android:max="12" />
 
                 <EditText
+                    android:id="@+id/edt_hour"
                     android:layout_width="40dp"
                     android:layout_height="wrap_content"
                     android:hint="@string/label_hh"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
                     android:inputType="number"
-                    android:id="@+id/edt_hour" />
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
             </LinearLayout>
 
             <LinearLayout
@@ -80,19 +79,19 @@
 
                 <SeekBar
                     android:id="@+id/seek_minutes"
-                    android:layout_gravity="center"
                     android:layout_width="0dp"
-                    android:max="60"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:layout_height="wrap_content" />
+                    android:max="60" />
 
                 <EditText
+                    android:id="@+id/edt_minutes"
                     android:layout_width="40dp"
                     android:layout_height="wrap_content"
                     android:hint="@string/label_mm"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
                     android:inputType="number"
-                    android:id="@+id/edt_minutes" />
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
 
 
             </LinearLayout>
@@ -100,16 +99,16 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:text="Work Summary"
+            android:layout_height="wrap_content"
             android:paddingTop="10dp"
-            android:layout_height="wrap_content" />
+            android:text="Work Summary" />
 
         <EditText
             android:id="@+id/edt_work_summary"
             android:layout_width="match_parent"
-            android:lines="3"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_height="wrap_content"
             android:hint="@string/label_work_summary"
-            android:layout_height="wrap_content" />
+            android:lines="3"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
 </LinearLayout>

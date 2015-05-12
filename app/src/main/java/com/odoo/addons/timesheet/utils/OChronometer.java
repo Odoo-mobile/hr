@@ -131,10 +131,16 @@ public class OChronometer extends TextView {
 
         String text = "";
         text += df.format(hours) + ":";
-        text += df.format(minutes) + ":";
-        text += df.format(seconds);
+        text += df.format(minutes);
+//        text += df.format(seconds);
 
         setText(text);
+    }
+
+    public String getOChronoText() {
+        String text = "";
+        text = getText().toString();
+        return text;
     }
 
     private void updateRunning() {

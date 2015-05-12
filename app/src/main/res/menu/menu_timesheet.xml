@@ -1,9 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/menu_create_new"
-        android:icon="@drawable/ic_action_add"
-        android:title="@string/label_create_new"
-        app:showAsAction="always|withText"></item>
-</menu>
+    xmlns:app="http://schemas.android.com/apk/res-auto"></menu>
