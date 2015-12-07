@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -43,7 +43,7 @@ import odoo.listeners.IOdooInstanceListener;
 import odoo.listeners.IOdooLoginCallback;
 import odoo.listeners.OdooError;
 
-public class OdooLogin extends ActionBarActivity implements View.OnClickListener,
+public class OdooLogin extends AppCompatActivity implements View.OnClickListener,
         View.OnFocusChangeListener, OdooInstancesSelectorDialog.OnInstanceSelectListener,
         OdooUserLoginSelectorDialog.IUserLoginSelectListener, IOdooConnectionListener, IOdooLoginCallback {
 

@@ -1,20 +1,20 @@
 /**
  * Odoo, Open Source Management Solution
  * Copyright (C) 2012-today Odoo SA (<http:www.odoo.com>)
- *
+ * <p/>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version
- *
+ * <p/>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details
- *
+ * <p/>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http:www.gnu.org/licenses/>
- *
+ * <p/>
  * Created on 30/12/14 3:31 PM
  */
 package com.odoo.core.orm;
@@ -110,11 +110,13 @@ public class OModel implements ISyncServiceListener {
     // Base Columns
     OColumn id = new OColumn("ID", OInteger.class).setDefaultValue(0);
     @Odoo.api.v8
-    @Odoo.api.v9alpha
+    @Odoo.api.v9
+    @Odoo.api.v10alpha
     public OColumn create_date = new OColumn("Created On", ODateTime.class);
 
     @Odoo.api.v8
-    @Odoo.api.v9alpha
+    @Odoo.api.v9
+    @Odoo.api.v10alpha
     public OColumn write_date = new OColumn("Last Updated On", ODateTime.class);
 
     // Local Base columns
@@ -358,8 +360,13 @@ public class OModel implements ISyncServiceListener {
                     Class<? extends Annotation> type = annotation.annotationType();
                     if (type.getDeclaringClass().isAssignableFrom(Odoo.api.class)) {
                         switch (mOdooVersion.getVersionNumber()) {
+                            case 10:
+                                if (type.isAssignableFrom(Odoo.api.v10alpha.class)) {
+                                    version++;
+                                }
+                                break;
                             case 9:
-                                if (type.isAssignableFrom(Odoo.api.v9alpha.class)) {
+                                if (type.isAssignableFrom(Odoo.api.v9.class)) {
                                     version++;
                                 }
                                 break;
@@ -383,7 +390,7 @@ public class OModel implements ISyncServiceListener {
                         version++;
                     }
                 }
-                return (version > 0) ? true : false;
+                return (version > 0);
             }
             return true;
         }
@@ -523,7 +530,7 @@ public class OModel implements ISyncServiceListener {
             }
         }
         names.addAll(Arrays.asList(allProjection));
-        names.addAll(Arrays.asList(new String[]{OColumn.ROW_ID, "id", "_write_date", "_is_dirty", "_is_active"}));
+        names.addAll(Arrays.asList(OColumn.ROW_ID, "id", "_write_date", "_is_dirty", "_is_active"));
         return names.toArray(new String[names.size()]);
     }
 
@@ -1033,7 +1040,7 @@ public class OModel implements ISyncServiceListener {
         OSyncAdapter syncAdapter = new OSyncAdapter(mContext, getClass(), null, true);
         syncAdapter.setModel(this);
         ODomain domain = new ODomain();
-        domain.add("id", "=", record.getInt("id"));
+        domain.add("id", "=", record.getFloat("id").intValue());
         syncAdapter.setDomain(domain);
         syncAdapter.checkForWriteCreateDate(false);
         syncAdapter.onPerformSync(getUser().getAccount(), null, authority(), null, new SyncResult());
