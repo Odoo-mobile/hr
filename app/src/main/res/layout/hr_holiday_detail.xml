@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/theme_primary"
+        android:minHeight="?attr/actionBarSize"
+        app:titleMarginStart="@dimen/default_16dp"
+        android:paddingTop="@dimen/statusBarHeight"
+        android:paddingRight="@dimen/default_8dp"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+        app:theme="@style/ToolBarTheme" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/statusTitle"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:gravity="center_horizontal"
+        android:visibility="gone" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <odoo.controls.OForm
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/hrDetail"
+            android:orientation="vertical"
+            app:controlIconTint="@color/body_text_3"
+            app:modelName="hr.holidays">
+
+            <View
+                android:layout_weight="1"
+                android:layout_height="5dp"
+                android:layout_width="match_parent"
+                android:id="@+id/viewState"></View>
+
+            <odoo.controls.OField
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:showLabel="false"
+                app:showIcon="false"
+                app:fieldTextAppearance="?android:textAppearanceMedium"
+                app:fieldTextSize="@dimen/text_size_xmedium"
+                app:fieldName="name"></odoo.controls.OField>
+
+            <View style="@style/ViewSeparator" />
+
+            <odoo.controls.OField
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:fieldName="holiday_status_id"
+                android:id="@+id/statusId"
+                app:widgetType="SearchableLive"></odoo.controls.OField>
+
+            <View style="@style/ViewSeparator" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <odoo.controls.OField
+                    android:layout_width="wrap_content"
+                    app:defaultValue="0"
+                    android:layout_height="match_parent"
+                    app:fieldName="number_of_days"
+                    app:widgetType="Duration"></odoo.controls.OField>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="left|fill_vertical"
+                    android:text="days" />
+            </LinearLayout>
+
+            <View style="@style/ViewSeparator" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/dateSelection"
+                android:orientation="vertical">
+
+                <odoo.controls.OField
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:fieldName="date_from"></odoo.controls.OField>
+
+                <odoo.controls.OField
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:fieldName="date_to"></odoo.controls.OField>
+
+                <View style="@style/ViewSeparator" />
+            </LinearLayout>
+
+
+            <odoo.controls.OField
+                android:layout_width="match_parent"
+                android:id="@+id/note"
+                android:layout_height="match_parent"
+                app:fieldName="notes"></odoo.controls.OField>
+        </odoo.controls.OForm>
+    </ScrollView>
+</LinearLayout>
