@@ -19,7 +19,9 @@
  */
 package com.odoo.config;
 
+import com.odoo.addons.leave.HrHolidayList;
 import com.odoo.core.support.addons.AddonsHelper;
+import com.odoo.core.support.addons.OAddon;
 
 public class Addons extends AddonsHelper {
 
@@ -29,4 +31,6 @@ public class Addons extends AddonsHelper {
      * Ex.:
      * OAddon partners = new OAddon(Partners.class).setDefault();
      */
+    OAddon HolidayList = new OAddon(HrHolidayList.class);
+
 }

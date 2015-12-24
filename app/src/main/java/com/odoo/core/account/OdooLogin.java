@@ -276,7 +276,6 @@ public class OdooLogin extends AppCompatActivity implements View.OnClickListener
         init();
     }
 
-
     @Override
     public void onConnect(Odoo odoo) {
         Log.v("Odoo", "Connected to server.");

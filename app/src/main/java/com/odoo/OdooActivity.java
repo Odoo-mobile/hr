@@ -69,7 +69,6 @@ import com.odoo.core.utils.OResource;
 import com.odoo.core.utils.drawer.DrawerUtils;
 import com.odoo.core.utils.sys.IOnActivityResultListener;
 import com.odoo.core.utils.sys.IOnBackPressListener;
-import com.odoo.R;
 
 import java.util.List;
 
@@ -91,7 +90,7 @@ public class OdooActivity extends OdooCompatActivity {
     private ActionBarDrawerToggle mDrawerToggle = null;
     private IOnBackPressListener backPressListener = null;
     private IOnActivityResultListener mIOnActivityResultListener = null;
-    //Drawer Containers
+
     private LinearLayout mDrawerAccountContainer = null;
     private LinearLayout mDrawerItemContainer = null;
     private Boolean mAccountBoxExpanded = false;

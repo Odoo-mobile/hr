@@ -15,4 +15,11 @@
     <string name="toast_permission_download_storage">Storage permission required to create downloaded file on your sdcard.</string>
     <string name="toast_permission_download_storage_help">Storage permission required to store downloaded files on sdcard of your phone. Please grant permission for use this feature</string>
     <string name="alert_permission_help">Some of permission required to start application. Please grant permission from application settings.</string>
+    <string name="sync_label_holidays">Leaves</string>
+    <string name="label_leave_request">Leave Request</string>
+    <string name="action_today">Today</string>
+    <string name="action_day_view">Day View</string>
+    <string name="action_three_day_view">3 Day View</string>
+    <string name="action_week_view">Week View</string>
+
 </resources>
